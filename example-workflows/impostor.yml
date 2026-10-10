@@ -1,0 +1,9 @@
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e # v7.0.0
+      - run: make test

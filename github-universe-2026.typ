@@ -454,20 +454,74 @@ jobs:
 ]
 
 #speaker-note[
-  - I picked that example because it's _also_ an example of GitHub improving its defaults, but in an uneven way. This will be a recurring theme through the talk.
+  - I picked this as a first example because it's _also_ a case of GitHub improving its defaults, but in an uneven way. This will be a recurring theme through the talk.
   - For one, _new_ repositories on GitHub no longer give the runner's `GITHUB_TOKEN` write access by default. But old repos still do, and established projects are older by definition!
   - For another, v6 and newer of the `checkout` action made it so that the credential is persisted in a temporary directory instead. This makes it harder to embed your token into an artifact. But plenty of projects still use `RUNNER_TEMP` for scratch space because GitHub documents it as such.
   - Finally, v4.4 and newer of `upload-artifact` skip hidden files and directories by default. But this doesn't protect users who bypass `upload-artifact` and use the artifact APIs directly, and it's also very disruptive to innocent workflows.
 ]
 
-= #emoji.face.think
+// = #emoji.face.think
+//
+// #speaker-note[
+//   - So, if GitHub has already improved the defaults here, how could they take it to the next level?
+//   - In other words, how could they make this pattern _fully_ secure by default?
+// ]
+
+== platform defaults and footguns
+
+#align(center + horizon)[
+  #show raw: set text(size: 25pt)
+
+  // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
+  ```yaml
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@c7d749a2… # v7.0.0
+        - run: make test
+  ```
+]
 
 #speaker-note[
-  - So, if GitHub has already improved the defaults here, how could they take it to the next level?
-  - In other words, how could they make this pattern _fully_ secure by default?
+  - So, let's take a look at some other cases where the defaults haven't shifted as much, or really at all.
+  - Here's another workflow you might see on any given day of the week.
+  - It uses a hash-pin instead of a version pin, which ensures that we always get the exact same contents and not a mutable tag or branch reference.
 ]
 
 == platform defaults and footguns
+
+#slide(config: config-common(subslide-preamble: none))[
+  #align(center + horizon)[
+    #show raw: set text(size: 21pt)
+    #set par(leading: 0.5em)
+
+    // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
+    ```
+    error[impostor-commit]:
+      commit with no history in referenced repository
+
+     --> example-workflows/impostor.yml:8:15
+      |
+    7 |       - name: checkout
+      |         -------------- this step
+    8 |         uses: actions/checkout@c7d749a2… # v7.0.0
+      |               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+      |               uses a commit that doesn't belong
+      |               to the specified org/repo
+      |
+      = note: audit confidence → High
+    ```
+  ]
+]
+
+#speaker-note[
+  - This is what zizmor shows for that workflow.
+  - Unfortunately the workflow is completely owned: we thought we were pulling from a trusted source (`actions/checkout`), but actually we're pulling from some random fork of that official repository. Anybody in the world can make a public fork, so it's truly arbitrary code.
+  - This is a consequence of GitHub's fork network design: GitHub uses Git alternates to share a single Git object database across a repo and its forks. As a result, most of GitHub's APIs don't "see" the difference between a fork and its parents when referencing Git objects by SHA instead of name.
+  - I find this particularly terrifying because it's _so_ easy to miss: external contributors try to bump my actions all the time, and I'm one slip-up away from them having full code execution on a trusted trigger (like `push`).
+]
 
 == community practices
 
