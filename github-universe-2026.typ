@@ -246,12 +246,55 @@
 
 == #emoji.heart amō
 
+#block(width: 100%, height: 1fr)[
+  #grid(
+    columns: (1fr, 1fr),
+    rows: (1fr,),
+    column-gutter: 1em,
+    align: (center + horizon, left + horizon),
+    [
+      #rounded-image("assets/tp-enroll.png", height: 100%)
+    ],
+    [
+      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.65em)[
+        #show raw: set text(size: 20pt)
+        ```yaml
+        jobs:
+          # look ma, no secrets
+          publish:
+            permissions:
+              id-token: write
+            steps:
+              - run: "# ..."
+              - run: "uv build"
+              - run: "uv publish"
+        ```
+      ]
+    ],
+  )
+]
+
 #speaker-note[
   - Real-world examples of these positive qualities abound.
   - For one, it's incredibly easy to build and test OSS on GitHub Actions, especially for platforms other than the one I use on a daily basis. Tens of thousands of major projects on GitHub ship the full matrix of `{x86, x64, arm64} x {Windows, macOS, Linux}` in their releases because of how straightforward GitHub Actions makes it.
   - Even this is an under-approximation for ecosystems like Python, where it's common ship many build variants for different libc versions, etc.
   - For another, GitHub adopted OIDC early, relative to other CI/CD providers. This spurred the development of techniques like Trusted Publishing for "credential-less" authentication.
   - Trusted Publishing started with PyPI and has now seen widespread adoption in the Ruby, Rust, and JavaScript communities, in no small part thanks to the foundation supplied by GitHub Actions.
+]
+
+== #emoji.heart amō
+
+#block(width: 100%, height: 1fr)[
+  #align(center)[
+    #rounded-image("assets/cryptography-wheels.png", height: 100%)
+  ]
+]
+
+#speaker-note[
+  - I like this screenshot because it shows just how material these positive qualities are.
+  - This is just a small handful of the wheels, which are binaries, that the `cryptography` package on PyPI publishes from GitHub with every single release. There are 58 of them total on each release currently, so the full list wouldn't fit on this slide.
+  - Every single one of them gets built and tested on GitHub Actions, and published through Trusted Publishing.
+  - Those builds then end up powering cryptography in most of the world's Python codebases. And GitHub Actions is a key enabler of that!
 ]
 
 == power
@@ -308,7 +351,7 @@
     it
   }
 
-  - insecure platform defaults
+  - insecure platform defaults and footguns
     - or: "i need a tool to solve what the platform should solve for me"
   - insecure community practices
     - or: "my entire CI/CD depends on mystery meat from `curl | bash`"
@@ -324,7 +367,99 @@
   - A lot of ink has been spilled over this topic already, but I'm going to frame it in terms of security.
 ]
 
-== #emoji.face.angry ōdī: insecure platform defaults
+= platform defaults and footguns
+
+#speaker-note[
+  - Let's talk about insecure defaults and footguns. GitHub Actions has developed a reputation for having both of these.
+  - In the interest of being fair, it's worth noting that GitHub _has_ fixed many of the insecure defaults in Actions in recent months.
+  - Still, there are plenty more to go around. Let's look at a few of them.
+]
+
+== platform defaults and footguns
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: cargo build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: .
+```
+
+#speaker-note[
+  - Let's start on the smaller end of things.
+  - This is a pretty normal looking GitHub Actions workflow. If you're like me, you probably see some take on this several times a week.
+  - But it also contains a pretty bad security vulnerability!
+]
+
+== platform defaults and footguns
+
+#align(center + horizon)[
+  #show raw: set text(size: 15pt)
+  #set par(leading: 0.3em)
+
+  ```
+  $ zizmor example-workflows/artipacked.yml
+  error[artipacked]: credential persistence through GitHub Actions artifacts
+    --> example-workflows/artipacked.yml:9:9
+     |
+   9 |         - uses: actions/checkout@v5
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^ does not set persist-credentials: false
+  10 |         - run: cargo build
+  11 |         - uses: actions/upload-artifact@v4.3.5
+     |  _________-
+  12 | |         with:
+  13 | |           name: build
+  14 | |           path: .
+     | |__________________- may leak the credentials persisted above
+     |
+     = note: audit confidence → High
+     = note: this finding has an auto-fix
+  ```
+]
+
+#speaker-note[
+  - If you ran that workflow through zizmor, you'd see something like this.
+  - The vulnerability here involves not one, not two, but three insecure defaults at once.
+  - First, older repositories default to a read-write token for GitHub Actions by default. That means that, even if you don't set an explicit write permission, most jobs get a token that can can modify PRs, push contents, etc.
+  - Second, the `checkout` action persists its credentials by default. In this specific version, v5, it does that by writing the `GITHUB_TOKEN` directly to a `.git/config` file in the working directory.
+  - Third and finally, the `upload-artifact` action uploads _everything_ in the directory it's given, including hidden files and directories like `.git`.
+  - When combined, these mean that an innocent maintainer is now uploading a write-capable `GITHUB_TOKEN` to a publicly readable actions artifact. Anybody can find that artifact and exfiltrate the token from it.
+  - Palo Alto Networks described this vulnerability class in 2024, and termed it "artipacked."
+]
+
+== platform defaults and footguns
+
+#rounded-image("assets/github-blog-1.png")
+#rounded-image("assets/checkout-security.png")
+#rounded-image("assets/upload-artifact.png")
+
+#speaker-note[
+  - I picked that example because it's _also_ an example of GitHub improving its defaults, but in an uneven way. This will be a recurring theme through the talk.
+  - For one, _new_ repositories on GitHub no longer give the runner's `GITHUB_TOKEN` write access by default. But old repos still do, and established projects are older by definition!
+  - For another, v6 and newer of the `checkout` action made it so that the credential is persisted in a temporary directory instead. This makes it harder to embed your token into an artifact. But plenty of projects still use `RUNNER_TEMP` for scratch space because GitHub documents it as such.
+  - Finally, v4.4 and newer of `upload-artifact` skip hidden files and directories by default. But this doesn't protect users who bypass `upload-artifact` and use the artifact APIs directly, and it's also very disruptive to innocent workflows.
+]
+
+= #emoji.face.think
+
+#speaker-note[
+  - So, if GitHub has already improved the defaults here, how could they take it to the next level?
+  - In other words, how could they make this pattern _fully_ secure by default?
+]
+
+== platform defaults and footguns
+
+== community practices
+
+// YOLO binaries
+
+// the entire concept/practice of JavaScript actions
+
 
 #slide(
   config: utils.merge-dicts(
