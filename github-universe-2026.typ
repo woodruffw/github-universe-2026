@@ -131,7 +131,7 @@
 #speaker-note[
   - That's me on the left.
   - Just a little bit about me. I'm a Member of Technical Staff at OpenAI, where I work on the Astral team. Specifically, I mostly work on uv, which some of you probably use.
-  - Outside of work, I've been involved in open source for a while.
+  - Outside of work, I've been involved in open source for over a decade.
   - Among other things, I'm one of Homebrew's maintainers, as well as one of the maintainers of PyPI.
   - However, this talk and its contents reflect my own thoughts and opinions. It doesn't necessarily reflect the opinions of my employer or any of the projects I help maintain.
 ]
@@ -529,6 +529,11 @@ jobs:
 
 // the entire concept/practice of JavaScript actions
 
+= concluding thoughts
+
+// github is doing a lot better
+// they're improving the defaults in actions, but in a spiky/uneven way
+// specifically, not making the defaults better retroactively helps existing OSS projects the least
 
 #slide(
   config: utils.merge-dicts(
@@ -555,7 +560,7 @@ jobs:
       align: left + horizon,
       [
         #set par(leading: 0.15em)
-        #text(size: 2em, weight: "bold")[thank \ you]
+        #text(size: 2em, weight: "bold")[thank \ you!]
       ],
       [
         #grid(
