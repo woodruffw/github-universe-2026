@@ -434,9 +434,24 @@ jobs:
 
 == platform defaults and footguns
 
-#rounded-image("assets/github-blog-1.png")
-#rounded-image("assets/checkout-security.png")
-#rounded-image("assets/upload-artifact.png")
+#slide(config: config-common(subslide-preamble: none))[
+  #align(center + horizon)[
+    #grid(
+      columns: (1fr, 1.6fr),
+      gutter: 0.75em,
+      align: center + horizon,
+      [
+        #rounded-image("assets/github-blog-1.png", width: 100%)
+      ],
+      [
+        #rounded-image("assets/upload-artifact.png", width: 100%)
+      ],
+      grid.cell(colspan: 2)[
+        #rounded-image("assets/checkout-security.png", width: 100%)
+      ],
+    )
+  ]
+]
 
 #speaker-note[
   - I picked that example because it's _also_ an example of GitHub improving its defaults, but in an uneven way. This will be a recurring theme through the talk.
