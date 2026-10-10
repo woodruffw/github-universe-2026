@@ -286,7 +286,9 @@
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #rounded-image("assets/cryptography-wheels.png", height: 100%)
+    #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+      #rounded-image("assets/cryptography-wheels.png", height: 100%)
+    ]
   ]
 ]
 
@@ -488,6 +490,7 @@ jobs:
   - So, let's take a look at some other cases where the defaults haven't shifted as much, or really at all.
   - Here's another workflow you might see on any given day of the week.
   - It uses a hash-pin instead of a version pin, which ensures that we always get the exact same contents and not a mutable tag or branch reference.
+  - Many online resources, including both zizmor and GitHub's official documentation, will tell you to use hash-pins for improved security.
 ]
 
 == platform defaults and footguns
@@ -518,10 +521,109 @@ jobs:
 
 #speaker-note[
   - This is what zizmor shows for that workflow.
-  - Unfortunately the workflow is completely owned: we thought we were pulling from a trusted source (`actions/checkout`), but actually we're pulling from some random fork of that official repository. Anybody in the world can make a public fork, so it's truly arbitrary code.
+  - Unfortunately the workflow is completely owned: we thought we were pulling from a trusted source (`actions/checkout`), but actually we're pulling a commit from some random fork. Anybody in the world can make a public fork, so it's truly arbitrary code.
   - This is a consequence of GitHub's fork network design: GitHub uses Git alternates to share a single Git object database across a repo and its forks. As a result, most of GitHub's APIs don't "see" the difference between a fork and its parents when referencing Git objects by SHA instead of name.
   - I find this particularly terrifying because it's _so_ easy to miss: external contributors try to bump my actions all the time, and I'm one slip-up away from them having full code execution on a trusted trigger (like `push`).
 ]
+
+== platform defaults and footguns
+
+#rounded-image("assets/impostor-banner.png", width: 100%)
+
+#speaker-note(subslide: 1)[
+  - GitHub is aware of this; it's an intentional design and performance tradeoff in their Git hosting model.
+  - It's even something their web UI will warn you about, if you navigate to the commit directly. But that only shows up in the commit view, not anywhere in Actions itself. And there's no official API for checking impostor-ness, although there's an undocumented one if you look in the right place.
+  - So, what could GitHub do better here, in terms of secure defaults?
+]
+
+#pause
+
+#block(width: 100%, height: 1fr, above: 0.3em)[
+  #align(center + horizon)[
+    #rounded-image("assets/sha-policy.png", height: 100%)
+  ]
+]
+
+#speaker-note(subslide: 2)[
+  - Well, I think the answer is kind of self-evident: this just shouldn't work at all!
+  - GitHub should simply refuse to run workflows that contain impostor commits. That includes transitive uses through composite actions.
+  - The moving parts for this already exist within the platform: GitHub lets projects opt into requiring actions to be fully hash-pinned, and there's the undocumented API that I mentioned. They're just not tied together in a way that produces a secure default, yet.
+]
+
+== platform defaults and footguns
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: important step
+        run: echo "It's really important to run this only on push events"
+        if: |
+          ${{ github.event.name == 'push' }}
+```
+
+#speaker-note[
+  - One last example before we move to the next domain.
+  - Once again, we have a workflow we've all seen some version of.
+  - In this case, we're trying to limit a step so that it only runs on a `push` event, even if its parent workflow supports other triggers. This is important if, say, another trigger for the workflow is extremely security sensitive, such as a `pull_request_target` or `workflow_run`.
+]
+
+== platform defaults and footguns
+
+```
+error[unsound-condition]: unsound conditional expression
+  --> example-workflows/unsound-condition.yml:9:9
+   |
+ 9 | /         if: |
+10 | |           ${{ github.event.name == 'push' }}
+   | |_____________________________________________^ condition always evaluates to true
+   |
+   = note: audit confidence → High
+   = note: this finding has an auto-fix
+```
+
+#speaker-note[
+  - As you've doubtless surmised, this workflow is vulnerable. This is what zizmor would show you for it.
+  - The footgun here is that GitHub Actions expressions and YAML do not compose together cleanly.
+  - In this case, we have a YAML multi-line string. GitHub then evaluates the expression to `false` but then embeds it within the string, resulting in the token `false` followed by a newline. And that's a string instead of a boolean, so it evaluates to `true` instead of `false`.
+  - The end result is that we thought we were adding a defensive guard, but in reality GitHub Actions will happily run our step for an attacker.
+]
+
+== platform defaults and footguns
+
+#block(width: 100%, height: 1fr)[
+  #grid(
+    columns: (1fr, 1.4fr),
+    rows: (1fr,),
+    column-gutter: 1em,
+    align: (center + horizon, left + horizon),
+    [
+      #box(width: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+        #rounded-image("assets/drake.jpg", width: 100%)
+      ]
+    ],
+    [
+      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.55em)[
+        #show raw: set text(size: 22pt)
+        ```
+        ${{
+          github.event.name == 'push'
+            && ''
+            || 'bar'
+        }}
+        ```
+      ]
+    ],
+  )
+]
+
+#speaker-note[
+  - This is a funny example because of how obviously wrong it is, but there are actually quite a few of these footguns in the Actions expression language.
+  - For example, this ternary-style condition won't do what you expect. Most people would expect it to evaluate to the empty string, but it actually evaluates to `'bar'`. GitHub added the `case()` function to work around this in January, but users need to manually identify currently buggy patterns and upgrade them manually.
+]
+
+= community practices
 
 == community practices
 
