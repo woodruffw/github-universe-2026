@@ -165,7 +165,9 @@
     column-gutter: 1em,
     align: (center + horizon, left + horizon),
     [
-      #rounded-image("assets/catullus.jpg", height: 100%)
+      #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+        #rounded-image("assets/catullus.jpg", height: 100%)
+      ]
     ],
     [
       #set par(leading: 0.55em)
@@ -253,7 +255,9 @@
     column-gutter: 1em,
     align: (center + horizon, left + horizon),
     [
-      #rounded-image("assets/tp-enroll.png", height: 100%)
+      #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+        #rounded-image("assets/tp-enroll.png", height: 100%)
+      ]
     ],
     [
       #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.65em)[
@@ -377,7 +381,7 @@
   - Still, there are plenty more to go around. Let's look at a few of them.
 ]
 
-== platform defaults and footguns
+== (insecure) platform defaults and footguns
 
 ```yaml
 jobs:
@@ -398,7 +402,7 @@ jobs:
   - But it also contains a pretty bad security vulnerability!
 ]
 
-== platform defaults and footguns
+== (insecure) platform defaults
 
 #align(center + horizon)[
   #show raw: set text(size: 15pt)
@@ -434,7 +438,7 @@ jobs:
   - Palo Alto Networks described this vulnerability class in 2024, and termed it "artipacked."
 ]
 
-== platform defaults and footguns
+== (insecure) platform defaults
 
 #slide(config: config-common(subslide-preamble: none))[
   #align(center + horizon)[
@@ -469,7 +473,7 @@ jobs:
 //   - In other words, how could they make this pattern _fully_ secure by default?
 // ]
 
-== platform defaults and footguns
+== (insecure) platform defaults
 
 #align(center + horizon)[
   #show raw: set text(size: 25pt)
@@ -493,7 +497,7 @@ jobs:
   - Many online resources, including both zizmor and GitHub's official documentation, will tell you to use hash-pins for improved security.
 ]
 
-== platform defaults and footguns
+== (insecure) platform defaults
 
 #slide(config: config-common(subslide-preamble: none))[
   #align(center + horizon)[
@@ -526,7 +530,7 @@ jobs:
   - I find this particularly terrifying because it's _so_ easy to miss: external contributors try to bump my actions all the time, and I'm one slip-up away from them having full code execution on a trusted trigger (like `push`).
 ]
 
-== platform defaults and footguns
+== (insecure) platform defaults
 
 #rounded-image("assets/impostor-banner.png", width: 100%)
 
@@ -550,7 +554,7 @@ jobs:
   - The moving parts for this already exist within the platform: GitHub lets projects opt into requiring actions to be fully hash-pinned, and there's the undocumented API that I mentioned. They're just not tied together in a way that produces a secure default, yet.
 ]
 
-== platform defaults and footguns
+== footguns
 
 ```yaml
 jobs:
@@ -558,7 +562,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: important step
-        run: echo "It's really important to run this only on push events"
+        run: echo "It's really important to secure this"
         if: |
           ${{ github.event.name == 'push' }}
 ```
@@ -569,7 +573,7 @@ jobs:
   - In this case, we're trying to limit a step so that it only runs on a `push` event, even if its parent workflow supports other triggers. This is important if, say, another trigger for the workflow is extremely security sensitive, such as a `pull_request_target` or `workflow_run`.
 ]
 
-== platform defaults and footguns
+== footguns
 
 ```
 error[unsound-condition]: unsound conditional expression
@@ -590,7 +594,7 @@ error[unsound-condition]: unsound conditional expression
   - The end result is that we thought we were adding a defensive guard, but in reality GitHub Actions will happily run our step for an attacker.
 ]
 
-== platform defaults and footguns
+== footguns
 
 #block(width: 100%, height: 1fr)[
   #grid(
@@ -619,15 +623,172 @@ error[unsound-condition]: unsound conditional expression
 ]
 
 #speaker-note[
-  - This is a funny example because of how obviously wrong it is, but there are actually quite a few of these footguns in the Actions expression language.
-  - For example, this ternary-style condition won't do what you expect. Most people would expect it to evaluate to the empty string, but it actually evaluates to `'bar'`. GitHub added the `case()` function to work around this in January, but users need to manually identify currently buggy patterns and upgrade them manually.
+  - That's a funny example because of how obviously wrong it is, but there are actually quite a few of these footguns in the Actions expression language.
+  - For example, this ternary-style condition won't do what you expect. Most people would expect it to evaluate to the empty string, but it actually evaluates to `'bar'`.
+  - GitHub added the `case()` function to work around this in January, but users need to manually identify currently buggy patterns and upgrade them manually.
+]
+
+== footguns
+
+#block(width: 100%, height: 1fr)[
+  #grid(
+    columns: (1fr, 1.4fr),
+    rows: (1fr,),
+    column-gutter: 1em,
+    align: (center + horizon, left + horizon),
+    [
+      #box(width: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+        #rounded-image("assets/drake.jpg", width: 100%)
+      ]
+    ],
+    [
+      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.55em)[
+        #show raw: set text(size: 22pt)
+        ```yaml
+        if: ${{
+            contains(
+              'refs/heads/main
+               refs/heads/develop',
+              github.ref
+            )
+          }}
+        ```
+      ]
+    ],
+  )
+]
+
+#speaker-note[
+  - A third example: GitHub provides the `contains()` function for checking whether or an array or string contains some element.
+  - But there's no native way to express an array in an actions expression: you need to create an array via `fromJSON`, which people forget to do.
+  - They end up writing things like this instead, which _look_ right but are actually buggy. For example, a branch named `mai` would pass this check, since `mai` is a substring of the haystack. That's clearly not what the developer intended!
+  - So, the common theme in these expression footguns is that there's a discontinuity between the user's intuitions around how the expression DSL _should_ behave and how it _actually_ behaves.
+  - Also, just for the record, zizmor will detect all of these, and more.
 ]
 
 = community practices
 
-== community practices
+#speaker-note[
+  - Okay, I think I've ragged on GitHub themselves enough, at least for now.
+  - Let's talk about some ways in which the Actions community has also encouraged and even ossified insecure-by-default practices.
+  - The distinction here is arguably more subtle than I can fairly relate in just one talk.
+  - I think it could fairly be argued that GitHub shares some responsibility here, given that programmers tend to do easy things and being insecure is easier than being secure on GitHub Actions.
+  - But it also takes two to tango, and many common third-party patterns within the Actions ecosystem warrant scrutiny.
+]
 
-// YOLO binaries
+== YOLO binaries
+
+#v(-0.4em)
+
+#align(center + top)[
+  #show raw: set text(size: 20pt)
+  #show raw.where(block: true): set block(above: 0.6em, below: 0pt)
+  #set par(leading: 0.25em)
+
+  #stack(
+    spacing: 1.25em,
+    block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: (x: 0.8em, y: 0.4em))[
+      #set align(left)
+      #text(size: 20pt, weight: "semibold", fill: rgb("#334155"))[what the user sees]
+
+      ```yaml
+      - uses: example/setup-gizmo@abcd... # v1.0.0
+      ```
+    ],
+    block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: (x: 0.8em, y: 0.4em))[
+      #set align(left)
+      #text(size: 20pt, weight: "semibold", fill: rgb("#334155"))[what the action runs]
+
+      ```yaml
+      inputs:
+        version:
+          required: false
+          default: "latest"
+
+      # ...
+      runs:
+        steps:
+          - run: "npm install gizmo@{{ inputs.version }}"
+      ```
+    ],
+  )
+]
+
+#speaker-note[
+  - One of the most common patterns I see in GitHub Actions is what I call the "YOLO binary" pattern.
+  - This is where, even _if_ you do everything as a user, like hash-pinning the action itself, the action still exhibits interior mutability. That mutability effectively defeats much of the value of a hash-pin.
+  - One of the most common ways this happens is by providing an action input that sets the tool's version, but then defaulting to "latest" when none is given.
+  - "Latest" then gets pulled from the latest GitHub release or whatever, with no real hash-pinning since the action can't possibly know the hashes for newer binaries _a priori_.
+  - The concerning thing about this pattern is that it's largely invisible and even taken for granted, unless you ready every single line of code for every action you depend on: it can happen deep inside the action's own rats' nest of shell scripts, Dockerfiles, or JavaScript.
+]
+
+== YOLO binaries
+
+#slide(config: config-page(margin: (x: 2em, top: 1em, bottom: 2em)))[
+  #v(-0.6em)
+
+  #block(width: 100%, height: 1fr)[
+    #align(center)[
+      // Fill the slide area by cropping the image's blank top and bottom margins.
+      #box(width: 100%, height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+        #rounded-image("assets/frog-and-toad.png", width: 100%, height: 100%, fit: "cover")
+      ]
+    ]
+  ]
+]
+
+#speaker-note[
+  - I think it's worth asking ourselves: why does this happen?
+  - There are a few reasons, but three big ones stand out to me.
+  - First, we've promulgated the idea that there's something fundamentally _wrong_ with not using the latest version of every thing we use, ever. I don't think this has panned out well for open source; we've seen attackers take advantage of this trend to launch massive and effective supply chain attacks.
+  - Second, the packaging ergonomics themselves encourage it: almost every packaging ecosystem makes it easier to install the floating "latest" version of a package rather than some specific version.
+  - Finally, the lack of alternative ergonomics on the Actions side _reinforce_ it, or at least did for a very long time.
+  - The latter has improved significantly in recent years with tools like Dependabot and Renovate, but GitHub Actions itself still doesn't behave like a normal packaging ecosystem in a lot of important ways, including update ergonomics!
+]
+
+== YOLO binaries
+
+#slide(config: config-common(subslide-preamble: none))[
+  #block(width: 100%, height: 1fr)[
+    #grid(
+      columns: (1fr,),
+      rows: (auto, 1fr),
+      row-gutter: 0.5em,
+      align: center + horizon,
+      [
+        #layout(size => {
+          let width = size.width * 75%
+          // Keep the byline and title: the top 340px of the 1830px-wide screenshot.
+          box(width: width, height: width * 340 / 1830, radius: 12pt, clip: true)[
+            #place(top + left)[
+              #image("assets/nesbitt1.png", width: width, height: width * 540 / 1830)
+            ]
+          ]
+        })
+      ],
+      [#rounded-image("assets/nesbitt2.png", height: 100%)],
+    )
+  ]
+]
+
+#speaker-note[
+  - At the end of the day, GitHub can never fully prevent a third-party action from exhibiting interior mutability.
+  - It's all arbitrary code, after all. And like all open source you fundamentally need to trust it.
+  - However, there are a few things that GitHub _could_ do to nudge their ecosystem away from this practice.
+  - For example, GitHub could continue to make the practice of updating actions more ergonomic. If it's easier to update actions themselves, then actions can be more aggressive about interior pinning.
+  - That's part of a larger observation, which is that GitHub Actions should behave more like the packaging ecosystem it functions as. Andrew Nesbitt has a great blog post from last December showing just how stark the feature divide between Actions and other packaging ecosystems is.
+]
+
+== JavaScript actions
+
+#speaker-note[
+  - Now for a slightly spicier one.
+  - If you've ever developed an action, you know that they come in approximately three forms: there are Docker actions, composite actions, and JavaScript actions.
+  - All three forms share a common base, which is that they are defined within a GitHub repository or a directory thereof and use an `action.yml` file to declare metadata and their entrypoint.
+  - However, JavaScript-based actions are...special.
+  - A huge reason to use a language like JavaScript is that it grants you access to its packaging ecosystem. But GitHub Actions doesn't have a "bundle" concept, so how are all of those dependencies supposed to get onto the runner?
+  - The answer, of course, is just to check them directly into the repo. So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
+]
 
 // the entire concept/practice of JavaScript actions
 

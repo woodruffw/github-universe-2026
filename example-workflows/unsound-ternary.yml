@@ -1,0 +1,14 @@
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: important step
+        run: echo "It's really important to run this only on push events"
+        if: |-
+          ${{
+          github.event.name == 'push'
+            && ''
+            || 'bar'
+          }}
