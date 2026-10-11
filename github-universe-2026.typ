@@ -864,6 +864,8 @@ runs:
 #speaker-note[
   - I think nobody in this room is unfamiliar with GitHub's recent reliability and availability issues.
   - Recent outages have affected almost every part of GitHub, including Actions.
+  - I've also seen a lot of schadenfreude online around this, most of which comes from people who think that it confirms their preheld beliefs around agentic engineering, Azure, or whatever else.
+  - I personally suspect this is wrong, or at least more wrong than right: the more parsimonious explanation is that GitHub is a victim of its own success.
 ]
 
 == reliability and availability
