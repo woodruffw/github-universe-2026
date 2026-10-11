@@ -781,11 +781,36 @@ error[unsound-condition]: unsound conditional expression
 
 == YOLO binaries
 
+```
+help[adhoc-packages]: ad-hoc installation of packages
+  --> example-workflows/adhoc-package.yml:11:11
+   |
+10 |         run: |
+   |         --- this step
+11 |           npm install prettier
+   |           ^^^^^^^^^^^^^^^^^^^^ installs a package outside of a lockfile
+   |
+   = note: audit confidence → High
+```
 #speaker-note[
   - It would of course be remiss of me not to mention that zizmor will flag many of these YOLO binary patterns.
+  - zizmor will also flag similar patterns on the workflow side, for example when you've used `npm install` or `pip install` to install a tool in an ad-hoc manner rather than putting it in a proper lockfile.
 ]
 
-== JavaScript actions
+== javascript actions
+
+```yaml
+name: "some-cool-action"
+description: "Deletes your kubernetes cluster"
+inputs:
+  github-token:
+    description: The GitHub API token to use
+    default: ${{ github.token }}
+runs:
+  using: node24
+  main: dist/index.js
+  post: dist/index.js
+```
 
 #speaker-note[
   - Now for a slightly spicier one.
@@ -793,8 +818,42 @@ error[unsound-condition]: unsound conditional expression
   - All three forms share a common base, which is that they are defined within a GitHub repository or a directory thereof and use an `action.yml` file to declare metadata and their entrypoint.
   - However, JavaScript-based actions are...special.
   - A huge reason to use a language like JavaScript is that it grants you access to its packaging ecosystem. But GitHub Actions doesn't have a "bundle" concept, so how are all of those dependencies supposed to get onto the runner?
-  - The answer, of course, is just to check them directly into the repo. So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
 ]
+
+== javascript actions
+
+#v(-0.4em)
+
+#align(center + horizon)[
+  #stack(
+    spacing: 0.75em,
+    rounded-image("assets/checkout.png", width: 100%),
+    rounded-image("assets/large-js.png", width: 100%),
+  )
+]
+
+#speaker-note[
+  - The answer, of course, is just to check them directly into the repo. So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
+  - I think this is really bad on several levels.
+  - For one, it's almost completely unauditable. In many cases, we have to just sort of hope that the bundled version of the action is the same as the readable version, despite both being checked into the repo.
+  - For another, it treats the Git repository itself as the packaging and distribution substrate, despite GitHub having a separate and very mature platform for creating releases from tags.
+  - This in turn means that important security features on the release side (like immutable releases and environment protections) don't inherently apply to actions; users need to do more work to do the secure thing.
+]
+
+== community practices
+
+#speaker-note[
+  - What could GitHub do to improve these community practices?
+  - As I mentioned before, GitHub fundamentally can't stop people from doing whatever they want. After all, CI/CD is fundamentally arbitrary code execution.
+  - As such we can't expect them to work miracles.
+  - But what GitHub _could_ do is continue to invest in Actions not just as a platform, but as a packaging ecosystem.
+  - My intuition is making the packaging experience smoother in Actions can and will nudge users away from doing risky and opaque things.
+  - For YOLO packages, that probably means making action upgrades even more of a first-class exprience, rather than something that's layered on top of a repository via Dependabot.
+  - For JavaScript actions, I think it means fundamentally re-evaluating how Actions are distributed.
+]
+
+
+== javascript actions
 
 // this is nuts on so many levels:
 // treats the git repo as the packaging substrate, when github has releases, etc. for this purpose
