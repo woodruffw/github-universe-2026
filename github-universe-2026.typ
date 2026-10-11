@@ -849,18 +849,26 @@ runs:
   - But what GitHub _could_ do is continue to invest in Actions not just as a platform, but as a packaging ecosystem.
   - My intuition is making the packaging experience smoother in Actions can and will nudge users away from doing risky and opaque things.
   - For YOLO packages, that probably means making action upgrades even more of a first-class exprience, rather than something that's layered on top of a repository via Dependabot.
-  - For JavaScript actions, I think it means fundamentally re-evaluating how Actions are distributed.
+  - For JavaScript actions, I think it means fundamentally re-evaluating how actions are distributed.
+  - Webassembly has made huge strides as a runtime in recernt years, and I wonder if WASM could help with both distribution and security isolation.
 ]
 
-
-== javascript actions
-
-// this is nuts on so many levels:
-// treats the git repo as the packaging substrate, when github has releases, etc. for this purpose
-// almost completely unauditable, easy to sneak changes into dist vs src
-// locks a single platform's resolution, which we just have to hope is right across all runner OSes
-
 = reliability and availability
+
+#speaker-note[
+  - Ok, now back to that elephant.
+]
+
+== reliability and availability
+
+#speaker-note[
+  - I think nobody in this room is unfamiliar with GitHub's recent reliability and availability issues.
+  - Recent outages have affected almost every part of GitHub, including Actions.
+]
+
+== reliability and availability
+
+== reliability and availability
 
 = "actions v2"
 
