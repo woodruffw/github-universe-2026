@@ -779,6 +779,12 @@ error[unsound-condition]: unsound conditional expression
   - That's part of a larger observation, which is that GitHub Actions should behave more like the packaging ecosystem it functions as. Andrew Nesbitt has a great blog post from last December showing just how stark the feature divide between Actions and other packaging ecosystems is.
 ]
 
+== YOLO binaries
+
+#speaker-note[
+  - It would of course be remiss of me not to mention that zizmor will flag many of these YOLO binary patterns.
+]
+
 == JavaScript actions
 
 #speaker-note[
@@ -790,13 +796,30 @@ error[unsound-condition]: unsound conditional expression
   - The answer, of course, is just to check them directly into the repo. So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
 ]
 
-// the entire concept/practice of JavaScript actions
+// this is nuts on so many levels:
+// treats the git repo as the packaging substrate, when github has releases, etc. for this purpose
+// almost completely unauditable, easy to sneak changes into dist vs src
+// locks a single platform's resolution, which we just have to hope is right across all runner OSes
+
+= reliability and availability
+
+= "actions v2"
 
 = concluding thoughts
 
-// github is doing a lot better
+// github is doing a lot better, but there are still significant headwinds that must be overcome
+//
 // they're improving the defaults in actions, but in a spiky/uneven way
 // specifically, not making the defaults better retroactively helps existing OSS projects the least
+//
+// outside of what github themselves can fix, the ecosystem as a whole needs to mature
+// but github themselves can aide in that by nudging/incentivizing better behaviors
+//
+// finally, github's own availability/reliability problems are also a security concern,
+// because they risk putting us back into a pre-github world where everything is "shifted right"
+// back onto developer boxes.
+//
+// zizmor should not exist!
 
 #slide(
   config: utils.merge-dicts(
