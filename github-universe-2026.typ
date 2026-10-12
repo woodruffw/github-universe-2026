@@ -74,6 +74,12 @@
 
 #set text(font: "Inter")
 
+#let chart-source(body) = block(width: 100%, above: 0.4em, below: 0pt)[
+  #align(left)[
+    #text(size: 0.55em, fill: gray)[#body]
+  ]
+]
+
 #title-slide[
   #touying-fn-wrapper((self: none) => stack(
     dir: ttb,
@@ -842,6 +848,14 @@ runs:
 
 == community practices
 
+#block(width: 100%, height: 1fr)[
+  #align(center)[
+    #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+      #rounded-image("assets/future.jpeg", height: 100%)
+    ]
+  ]
+]
+
 #speaker-note[
   - What could GitHub do to improve these community practices?
   - As I mentioned before, GitHub fundamentally can't stop people from doing whatever they want. After all, CI/CD is fundamentally arbitrary code execution.
@@ -861,16 +875,62 @@ runs:
 
 == reliability and availability
 
-#speaker-note[
-  - I think nobody in this room is unfamiliar with GitHub's recent reliability and availability issues.
-  - Recent outages have affected almost every part of GitHub, including Actions.
-  - I've also seen a lot of schadenfreude online around this, most of which comes from people who think that it confirms their preheld beliefs around agentic engineering, Azure, or whatever else.
-  - I personally suspect this is wrong, or at least more wrong than right: the more parsimonious explanation is that GitHub is a victim of its own success.
+#block(width: 100%, height: 1fr)[
+  #align(center + horizon)[
+    #rounded-image("assets/github-growth.webp", height: 100%)
+  ]
 ]
 
-== reliability and availability
+#chart-source[Source: https://github.blog/news-insights/company-news/the-august-17-outage-and-the-work-ahead/]
 
-== reliability and availability
+#speaker-note[
+  - I suspect that everybody in this room is familiar with GitHub's recent reliability and availability issues.
+  - Recent outages have affected almost every part of GitHub, including Actions.
+  - I've also seen a lot of schadenfreude online around this, most of which comes from people who treat it as confirmation for preheld beliefs around agentic engineering, Azure, or whatever else.
+  - I personally suspect this is wrong, or at least more wrong than right: the more parsimonious explanation is that GitHub is a victim of its own success.
+  - In short: way more people (and their agents) are using the service than ever before, and GitHub is clearly struggling to adapt past assumptions around scale and growth to this new reality.
+]
+
+== reliability and availability...as security?
+
+#v(0.5em)
+
+#block(width: 95%)[
+  #set text(size: 30pt)
+  #set list(spacing: 0.9em)
+  #show list: it => {
+    show list: set text(size: 20pt, fill: rgb("#555555"))
+    show list: set block(above: 0.3em, below: 0pt)
+    it
+  }
+
+  - oops, the maintainers are shifting right again
+  - spoliation of the commons
+]
+
+#speaker-note[
+  - Many people have talked about GitHub's reliability and availability problems from the perspective of being a frustrated user, paying customer, etc.
+  - But I think we should consider two security framings as well.
+  - I think of these as accidentally inducing maintainers into "shifting right" again and "spoliation of the commons," respectively.
+]
+
+== unreliability makes maintainers shift right
+
+#speaker-note[
+  - Sorry, I'm going to abuse the "shift left" metaphor for just a bit.
+  - For the last few years, a huge factor in the success of open source security has been _successfully_ getting open source maintainers to "shift left."
+  - That has included getting maintainers to adopt CI/CD, and getting them to treat it as an indespensible partner in their development flows.
+  - In particular, reliable CI/CD infrastructure and machine identity enable maintainers to move away from things like plaintext credentials on developer machines.
+  - This is a huge win for open srouce, since it makes it harder for an attacker to pivot from compromising one project to compromising everything controlled by that project's maintainer.
+]
+
+== unreliability: spoliation of the commons
+
+#speaker-note[
+  - There's another angle to consider.
+]
+
+// if GitHub's resources can't grow as fast
 
 = "actions v2"
 
