@@ -914,7 +914,7 @@ runs:
   - I think of these as accidentally inducing maintainers into "shifting right" again and "spoliation of the commons," respectively.
 ]
 
-== unreliability makes maintainers shift right
+== reliable CI makes maintainers shift left
 
 #speaker-note[
   - Sorry, I'm going to abuse the "shift left" metaphor for just a bit.
@@ -924,10 +924,22 @@ runs:
   - This is a huge win for open srouce, since it makes it harder for an attacker to pivot from compromising one project to compromising everything controlled by that project's maintainer.
 ]
 
-== unreliability: spoliation of the commons
+== unreliable CI makes maintainers shift right
 
 #speaker-note[
-  - There's another angle to consider.
+  - So, now we have the converse.
+  - I think we should be concerned that an unreliable GitHub (and unreliable actions in particular) will cause maintainers to "shift right" again.
+  - They can't be blamed for it either: you can only have your critical release pipelines fail so many times before you rage quit and go back to storing all of your publishing credentials on your devbox.
+  - Similarly, you can only endure so many `git push` outages before you start to seriously think about self-hosting your own forge.
+  - There's nothing inherently wrong with this. Developer machines can be secure, as can self-hosting.
+  - But security at large scales requires us to think about aggregates, not just best-case individuals.
+  - And _in aggregate_, more developers doing things on their own mean more attack surface through unpatched servers, improper isolation of credentials, and so forth.
+]
+
+== spoliation of the commons
+
+#speaker-note[
+  - There's another angle to consider as well.
 ]
 
 // if GitHub's resources can't grow as fast
