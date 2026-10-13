@@ -1000,6 +1000,22 @@ runs:
 
 #speaker-note[
   - Okay, that was quite an airing of grievances. We're almost at the end.
+  - The point of this talk was to ask what a "v2" of GitHub Actions could look like, at least from a maintainer's perspective.
+]
+
+== zizmor should not exist!
+
+#block(width: 100%, height: 1fr)[
+  #align(center)[
+    #rounded-image("assets/secure-defaults.png", height: 100%)
+  ]
+]
+
+#speaker-note[
+  - Here's an important thing I want to impart, in case I haven't: zizmor should not exist!
+  - Throughout this talk, I've yammered about _secure defaults_. Tools, especially third-party tools, are not secure defaults.
+  - They are stopgaps. Important and even necessary stopgaps perhaps, but stopgaps nonetheless.
+  - Nothing would make me happier than for it to become a relic of the past, in the same way that we talk about
 ]
 
 // github is doing a lot better, but there are still significant headwinds that must be overcome
