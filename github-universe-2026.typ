@@ -369,7 +369,7 @@
   - insecure community practices
     - or: "my entire CI/CD depends on mystery meat from `curl | bash`"
   - reliability and availability
-    - or "if i see one more outage i'm going back to jenkins"
+    - or "if i see one more outage/slop pr i'm going back to self hosting"
 ]
 
 #speaker-note[
@@ -917,7 +917,11 @@ runs:
 
 == reliable CI makes maintainers shift left
 
-#gif(path("assets/doge-eats-supply-chain.gif"))
+#block(width: 100%, height: 1fr)[
+  #align(center + horizon)[
+    #gif(path("assets/doge-eats-supply-chain.gif"), height: 100%)
+  ]
+]
 
 #speaker-note[
   - Sorry, I'm going to abuse the "shift left" metaphor for just a bit.
@@ -928,6 +932,12 @@ runs:
 ]
 
 == unreliable CI makes maintainers shift right
+
+#block(width: 100%, height: 1fr)[
+  #align(center + horizon)[
+    #gif(path("assets/doge-shifts-right.gif"), height: 100%)
+  ]
+]
 
 #speaker-note[
   - So, now we have the converse.
@@ -943,13 +953,54 @@ runs:
 
 #speaker-note[
   - There's another angle to consider as well.
+  - It seems very unlikely that demand for GitHub and GitHub Actions will go down, or even plateau. All signs point to demand continuing to increase.
+  - Everybody in this room knows why that is: an absolutely bananas amount of vibing.
+  - I am not opposed to LLMs. That would be very hypocritical to me.
+  - But I _am_ concerned that GitHub is not doing enough to prevent LLM usage, including _well-intentioned_ usage, from spoiling the commons for the larger Open Source community.
+  - This spoilation takes two forms.
+  - First, there's the problem of resource consumption more generally, mentioned before. I see no easy way out of this: it's clearly unacceptable to police what makes for "good" open source; GitHub just needs to scale to meet the demand.
+  - But second, there's a spam problem: people use LLMs to "contribute" to open source in an anti-social way, and this pushes people off the platform and back towards less secure alternatives.
 ]
 
-// if GitHub's resources can't grow as fast
+== de-spoiling the commons
+
+#slide(config: utils.merge-dicts(
+  config-page(margin: (x: 0.75em, y: 2em)),
+  config-common(subslide-preamble: none),
+))[
+  #block(width: 100%, height: 1fr)[
+    #grid(
+      columns: (1fr, 1fr),
+      rows: (1fr, auto),
+      column-gutter: 0.5em,
+      row-gutter: 0.65em,
+      align: center + horizon,
+      grid.cell(colspan: 2)[
+        #rounded-image("assets/nudnik.png", height: 100%)
+      ],
+      [#rounded-image("assets/vouch.png", width: 100%)],
+      [#rounded-image("assets/astral-bot.png", width: 100%)],
+    )
+  ]
+]
+
+#speaker-note[
+  - One of the things I love about open source is that it shows that there's no such thing as a "tragedy" of the commons.
+  - We benefit immensely from having as many people engage in open source as possible. But that doesn't mean people can't behave poorly in it, i.e. engage in its spoliation.
+  - So far, GitHub has mostly socialized the problem of LLM spam back onto maintainers, leaving them to sift through the noise.
+  - The end result is a patchwork of different projects trying to maintain their sanity. I don't think that's sustainable long-term.
+  - Instead, I'd like to see GitHub invest in better moderation primitives, up to and including having a more official stance on improving the quality of work in the agentic era.
+  - I don't think it's at all clear yet what that would look like, but it seems possible to me that reputation and/or vouching systems could help here.
+  - On the other hand, such approaches run a real risk of starving the open source world of its talent pipeline. We were all obnoxious noobs at some point. Or at least I was.
+]
+
+// = concluding thoughts
 
 = "actions v2"
 
-= concluding thoughts
+#speaker-note[
+  - Okay, that was quite an airing of grievances. We're almost at the end.
+]
 
 // github is doing a lot better, but there are still significant headwinds that must be overcome
 //
