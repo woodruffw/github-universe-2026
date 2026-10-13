@@ -2,6 +2,7 @@
 #import themes.simple: *
 #import "@preview/herodot:1.0.0": *
 #import "@preview/pinit:0.2.2": *
+#import "presenter-gif.typ": gif
 
 #let rounded-image(path, radius: 12pt, ..args) = box(
   radius: radius,
@@ -916,12 +917,14 @@ runs:
 
 == reliable CI makes maintainers shift left
 
+#gif(path("assets/doge-eats-supply-chain.gif"))
+
 #speaker-note[
   - Sorry, I'm going to abuse the "shift left" metaphor for just a bit.
   - For the last few years, a huge factor in the success of open source security has been _successfully_ getting open source maintainers to "shift left."
   - That has included getting maintainers to adopt CI/CD, and getting them to treat it as an indespensible partner in their development flows.
   - In particular, reliable CI/CD infrastructure and machine identity enable maintainers to move away from things like plaintext credentials on developer machines.
-  - This is a huge win for open srouce, since it makes it harder for an attacker to pivot from compromising one project to compromising everything controlled by that project's maintainer.
+  - This is a huge win for maintainers and downstreams alike, since it makes it harder for an attacker to pivot from compromising one project to compromising everything controlled by that project's maintainer.
 ]
 
 == unreliable CI makes maintainers shift right
