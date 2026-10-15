@@ -23,7 +23,7 @@ Image slides use the template's Title and Image frame; text slides use Title
 and Content. The title card includes the speaker portrait, and the introduction
 uses Speaker bio with the existing project logos in its bio area.
 Mixed image/code slides use Developer Code Right. The closing
-slide retains the template's original background and adds the talk's QR links.
+slide uses the template's original background and thank-you text with the zizmor rainbow.
 Untitled slides share the light Blank layout's content insets. Stacked images
 fit at a common width while preserving their aspect ratios and a consistent gap.
 

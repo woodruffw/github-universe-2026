@@ -1091,34 +1091,14 @@
     config-common(subslide-preamble: none),
   ),
 )[
-  #place(top + left, dx: 206.089pt, dy: 200.47pt, image(
-    "assets/universe-template/github-mark.svg",
-    width: 94.178pt,
-    height: 91.06pt,
-    fit: "stretch",
-  ))
-  #place(top + left, dx: 322.68pt, dy: 187.863pt, block(width: 438.3pt, height: 116.274pt)[
-    #align(left + horizon)[
-      #text(font: "Mona Sans Display", size: 89.96pt, weight: "regular")[thank you!]
+  #place(top + left, dx: 206.089pt, dy: 191.47pt, block(width: 94.178pt, height: 91.06pt)[
+    #align(center + horizon)[
+      #text(size: 94.178pt)[#emoji.rainbow]
     ]
   ])
-
-  #let qr-link(path, caption) = block(width: 190pt, fill: white, inset: (x: 8pt, y: 10pt))[
-    #grid(
-      columns: (1fr,),
-      rows: (154pt, 18pt),
-      row-gutter: 8pt,
-      align: center + horizon,
-      image(path, width: 154pt),
-      text(font: "Mona Sans Mono", size: 14pt)[#caption],
-    )
-  ]
-  #place(top + left, dx: 45.875pt, dy: 315pt, grid(
-    columns: (190pt, 190pt, 190pt, 190pt),
-    column-gutter: 36pt,
-    qr-link("assets/slides-qr.png", [slides]),
-    qr-link("assets/personal-website-qr.png", [personal website]),
-    qr-link("assets/blog-qr.png", [blog]),
-    qr-link("assets/zizmor-qr.png", [zizmor]),
-  ))
+  #place(top + left, dx: 322.68pt, dy: 187.863pt, block(width: 438.3pt, height: 116.274pt)[
+    #align(left + horizon)[
+      #text(font: "Mona Sans Display", size: 89.96pt, weight: "regular")[Thank you]
+    ]
+  ])
 ]
