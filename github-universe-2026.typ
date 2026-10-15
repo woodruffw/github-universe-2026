@@ -951,10 +951,18 @@ runs:
 
 == spoliation of the commons
 
+#block(width: 100%, height: 1fr)[
+  #align(center)[
+    #move(dy: -0.5em)[
+      #rounded-image("assets/ghsa-spam.png", height: 100%)
+    ]
+  ]
+]
+
 #speaker-note[
   - There's another angle to consider as well.
   - It seems very unlikely that demand for GitHub and GitHub Actions will go down, or even plateau. All signs point to demand continuing to increase.
-  - Everybody in this room knows why that is: an absolutely bananas amount of vibing.
+  - Everybody in this room knows why that is: an absolutely bananas amount of vibe coding.
   - I am not opposed to LLMs. That would be very hypocritical to me.
   - But I _am_ concerned that GitHub is not doing enough to prevent LLM usage, including _well-intentioned_ usage, from spoiling the commons for the larger Open Source community.
   - This spoilation takes two forms.
@@ -994,8 +1002,6 @@ runs:
   - On the other hand, such approaches run a real risk of starving the open source world of its talent pipeline. We were all obnoxious noobs at some point. Or at least I was.
 ]
 
-// = concluding thoughts
-
 = "actions v2"
 
 #speaker-note[
@@ -1007,7 +1013,9 @@ runs:
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #rounded-image("assets/secure-defaults.png", height: 100%)
+    #move(dy: -0.5em)[
+      #rounded-image("assets/secure-defaults.png", height: 100%)
+    ]
   ]
 ]
 
@@ -1015,7 +1023,38 @@ runs:
   - Here's an important thing I want to impart, in case I haven't: zizmor should not exist!
   - Throughout this talk, I've yammered about _secure defaults_. Tools, especially third-party tools, are not secure defaults.
   - They are stopgaps. Important and even necessary stopgaps perhaps, but stopgaps nonetheless.
-  - Nothing would make me happier than for it to become a relic of the past, in the same way that we talk about
+  - Nothing would make me happier than for it to become a relic of the past, in the same way that we increasingly talk about memory safety as a property of languages and systems rather than something approximated through sanitizers and fuzzing.
+]
+
+== security by default
+
+#align(center + horizon)[
+  #move(dy: -1em)[
+    #show raw: set text(size: 16pt)
+    #set par(leading: 0.55em)
+
+    ```
+    To github.com:username/repo.git
+     ! [rejected]        main -> main
+    error: failed to push some refs to 'git@github.com:username/repo.git'
+    hint: Updates were rejected because the remote does not believe that they
+    hint: are secure. Remote reports:
+    hint:
+    hint: ref main: .github/workflows/ci.yml:123 uses an impostor commit
+    hint: ref main: .github/workflows/test.yml:456 has an unsound `if` condition
+    hint:
+    hint: Fix these problems or configure the remote to bypass them and accept
+    hint: their risk before pushing again.
+    ```
+  ]
+]
+
+#speaker-note[
+  - Instead of tools like zizmor, a "v2" of GitHub Actions should be secure by default.
+  - Per our three domains, that means three things.
+  - First, a v2 should not have many, or even any, of the specific footguns we covered. And these are just a tiny subset.
+  - Second, a v2 should help _induce_ the community away from secure packages by treating Actions more like the package ecosystem it is. Package management should not be an afterthought for GitHub Actions, it's one of the things that makes it so amazing!
+  - And finally, a v2 should grapple with the hard problem of our new normal in the open source commons, so that maintainers do not get fed up and vote for insecurity with their feet.
 ]
 
 // github is doing a lot better, but there are still significant headwinds that must be overcome
