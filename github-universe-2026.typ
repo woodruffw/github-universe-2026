@@ -31,12 +31,15 @@
   cutout: false,
 ) = {
   let body-fill = rgb("#E6E6E6")
+  // Preserve the notes' original on-screen size after changing slide dimensions.
+  let notes-scale = height / (297mm * 9 / 16)
   let body-content = {
     set align(left + top)
-    set text(size: 19.5pt)
+    set text(font: "Inter", size: 19.5pt * notes-scale, weight: "regular")
+    set par(leading: 0.65em)
     pad(
-      x: 48pt,
-      top: 24pt,
+      x: 48pt * notes-scale,
+      top: 24pt * notes-scale,
       utils.current-slide-note,
     )
     utils.slide-note-state.update(none)
@@ -76,6 +79,9 @@
   ),
 )
 
+// Mona's ī macron overhangs toward d; give that pair a little optical clearance.
+#show regex("[Ōō]dī"): it => [#(it.text.replace("ī", ""))#h(0.06em)ī]
+
 #let chart-source(body) = block(width: 100%, above: 0.4em, below: 0pt)[
   #align(center)[
     #text(size: 0.55em, fill: universe.muted)[#body]
@@ -109,27 +115,37 @@
 
 #speaker-slide("assets/me.jpg", role: [Open Source Maintainer / MTS, OpenAI])[
   #grid(
-    columns: (1fr, 1fr),
-    column-gutter: 1.5em,
-    row-gutter: 0.65em,
-    align: center + horizon,
-    grid.cell(colspan: 2)[
+    columns: (1fr,),
+    row-gutter: 1.2em,
+    align: center,
+    [
       #image("assets/zizmor.png", width: 65%)
     ],
     [
-      // Compensate for the logo's baked-in white margins.
-      #box(width: 3.4em, height: 3.4em, clip: true)[
-        #place(center + horizon, image("assets/oai.png", width: 6.8em))
+      #block(width: 64%)[
+        #grid(
+          columns: (1fr, 1fr),
+          column-gutter: 2em,
+          row-gutter: 1.2em,
+          align: center + horizon,
+          [
+            // Compensate for the logo's baked-in white margins.
+            #box(width: 3.4em, height: 3.4em, clip: true)[
+              #place(center + horizon, image("assets/oai.png", width: 6.8em))
+            ]
+          ],
+          [
+            #rounded-image("assets/astral.png", width: 3.4em, height: 3.4em)
+          ],
+
+          [
+            #image("assets/brew.svg", height: 3.8em)
+          ],
+          [
+            #image("assets/pypi.svg", height: 3.2em)
+          ],
+        )
       ]
-    ],
-    [
-      #rounded-image("assets/astral.png", width: 3.4em, height: 3.4em)
-    ],
-    [
-      #image("assets/brew.svg", height: 3.8em)
-    ],
-    [
-      #image("assets/pypi.svg", height: 3.2em)
     ],
   )
 ]
@@ -144,8 +160,10 @@
 
 == #emoji.rainbow zizmor
 
-#block(width: 100%, height: 1fr, below: 0.2em)[
-  #image("assets/zizmor-cli-1.png", width: 100%, height: 100%, fit: "contain")
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #image("assets/zizmor-cli-1.png", width: 100%, height: 100%, fit: "contain")
+  ]
 ]
 
 #speaker-note[
@@ -222,7 +240,8 @@
 == #emoji.heart amō
 
 #block(width: 100%, height: 1fr)[
-  #grid(
+  // Balance the collage's clearance below the heading and above the footer.
+  #move(dy: -16pt, grid(
     columns: (1fr, 1fr),
     rows: (1fr,),
     column-gutter: 1em,
@@ -233,7 +252,7 @@
     [
       #stacked-images(("assets/typical-matrix.png", "assets/lots-of-yaml.png"))
     ],
-  )
+  ))
 ]
 
 #speaker-note[
@@ -333,14 +352,12 @@
 == #emoji.face.angry ōdī
 
 #text-slide[
-  #v(18pt)
-
-  #block(width: 95%)[
-    #set text(size: 30pt)
-    #set list(spacing: 0.9em)
+  #block(width: 100%)[
+    #set text(size: 21.99pt, top-edge: "ascender")
+    #set list(spacing: 10pt)
     #show list: it => {
-      show list: set text(size: 20pt, fill: universe.muted)
-      show list: set block(above: 0.3em, below: 0pt)
+      show list: set text(size: 17.99pt, fill: universe.muted)
+      show list: set block(above: 5pt, below: 0pt)
       it
     }
 
@@ -451,7 +468,7 @@
 ]
 
 #speaker-note[
-  - I picked this as a first example because it's _also_ a case of GitHub improving its defaults, but in an uneven way. This will be a recurring theme through the talk.
+  - I picked this as a first example because it's _also_ a case of GitHub improving its defaults, but in an uneven way.
   - For one, _new_ repositories on GitHub no longer give the runner's `GITHUB_TOKEN` write access by default. But old repos still do, and established projects are older by definition!
   - For another, v6 and newer of the `checkout` action made it so that the credential is persisted in a temporary directory instead. This makes it harder to embed your token into an artifact. But plenty of projects still use `RUNNER_TEMP` for scratch space because GitHub documents it as such.
   - Finally, v4.4 and newer of `upload-artifact` skip hidden files and directories by default. But this doesn't protect users who bypass `upload-artifact` and use the artifact APIs directly, and it's also very disruptive to innocent workflows.
@@ -523,7 +540,9 @@
 
 == (insecure) platform defaults
 
-#rounded-image("assets/impostor-banner.png", width: 100%)
+// Balance the image group between the heading and footer in both reveal states.
+#let image-offset = -18pt
+#move(dy: image-offset, rounded-image("assets/impostor-banner.png", width: 100%))
 
 #speaker-note(subslide: 1)[
   - GitHub is aware of this; it's an intentional design and performance tradeoff in their Git hosting model.
@@ -535,7 +554,7 @@
 
 #block(width: 100%, height: 1fr, above: 0.3em)[
   #align(center + horizon)[
-    #rounded-image("assets/sha-policy.png", height: 100%)
+    #move(dy: image-offset, rounded-image("assets/sha-policy.png", height: 100%))
   ]
 ]
 
@@ -655,11 +674,18 @@
 
 == YOLO binaries
 
-#code-slide[
+#code-slide(captioned: true)[
   #let example(caption, body) = block(width: 100%, height: 100%)[
-    #text(size: 14pt, font: "Mona Sans Mono", fill: universe.muted)[#upper(caption)]
-    #v(8pt)
-    #block(width: 100%, height: 1fr, above: 0pt, below: 0pt)[#body]
+    #grid(
+      columns: (1fr,),
+      rows: (16.202756pt, 7.919921pt, 1fr),
+      [
+        #set text(size: 14pt, font: "Mona Sans Mono", fill: universe.muted, top-edge: "ascender")
+        #upper(caption)
+      ],
+      [],
+      body,
+    )
   ]
   #grid(
     columns: (1fr,),
@@ -696,17 +722,18 @@
 
 == YOLO binaries
 
-#slide[
+#text-slide[
   #block(width: 100%, height: 1fr)[
     #align(center)[
       // Crop only blank margins (source rows 160–880); retain every line of the meme.
       #layout(size => {
-        let width = size.height * 1536 / 720
-        box(width: width, height: size.height, radius: 7pt, stroke: 1pt + universe.line, clip: true)[
-          #place(top + left, dy: -size.height * 160 / 720, image(
+        let height = calc.min(size.height, size.width * 720 / 1536)
+        let width = height * 1536 / 720
+        box(width: width, height: height, radius: 7pt, stroke: 1pt + universe.line, clip: true)[
+          #place(top + left, dy: -height * 160 / 720, image(
             "assets/frog-and-toad.png",
             width: width,
-            height: size.height * 1024 / 720,
+            height: height * 1024 / 720,
           ))
         ]
       })
@@ -802,8 +829,10 @@
 
 == javascript actions
 
-#block(width: 100%, height: 1fr)[
-  #stacked-images(("assets/checkout.png", "assets/large-js.png"))
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #stacked-images(("assets/checkout.png", "assets/large-js.png"))
+  ]
 ]
 
 #speaker-note[
@@ -816,10 +845,12 @@
 
 == community practices
 
-#block(width: 100%, height: 1fr)[
-  #align(center)[
-    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
-      #rounded-image("assets/future.jpeg", height: 100%)
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center + horizon)[
+      #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
+        #rounded-image("assets/future.jpeg", height: 100%)
+      ]
     ]
   ]
 ]
@@ -843,13 +874,15 @@
 
 == reliability and availability
 
-#block(width: 100%, height: 1fr)[
-  #align(center + horizon)[
-    #rounded-image("assets/github-growth.webp", height: 100%)
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center + horizon)[
+      #rounded-image("assets/github-growth.webp", height: 100%)
+    ]
   ]
-]
 
-#chart-source[Source: https://github.blog/news-insights/company-news/the-august-17-outage-and-the-work-ahead/]
+  #chart-source[Source: https://github.blog/news-insights/company-news/the-august-17-outage-and-the-work-ahead/]
+]
 
 #speaker-note[
   - I suspect that everybody in this room is familiar with GitHub's recent reliability and availability issues.
@@ -862,14 +895,12 @@
 == reliability and availability...as security?
 
 #text-slide[
-  #v(18pt)
-
-  #block(width: 95%)[
-    #set text(size: 30pt)
-    #set list(spacing: 0.9em)
+  #block(width: 100%)[
+    #set text(size: 21.99pt, top-edge: "ascender")
+    #set list(spacing: 10pt)
     #show list: it => {
-      show list: set text(size: 20pt, fill: universe.muted)
-      show list: set block(above: 0.3em, below: 0pt)
+      show list: set text(size: 17.99pt, fill: universe.muted)
+      show list: set block(above: 5pt, below: 0pt)
       it
     }
 
@@ -920,10 +951,12 @@
 
 == spoliation of the commons
 
-#block(width: 100%, height: 1fr)[
-  #align(center)[
-    #block[
-      #rounded-image("assets/ghsa-spam.png", height: 100%)
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center)[
+      #block[
+        #rounded-image("assets/ghsa-spam.png", height: 100%)
+      ]
     ]
   ]
 ]
@@ -978,10 +1011,12 @@
 
 == zizmor should not exist!
 
-#block(width: 100%, height: 1fr)[
-  #align(center)[
-    #block[
-      #rounded-image("assets/secure-defaults.png", height: 100%)
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center)[
+      #block[
+        #rounded-image("assets/secure-defaults.png", height: 100%)
+      ]
     ]
   ]
 ]
@@ -1045,10 +1080,12 @@
       header: none,
       footer: none,
       margin: 0pt,
-      background: place(top + left, image(
+      fill: black,
+      background: place(top + left, dx: 0.826457pt, dy: 0.535512pt, image(
         "assets/universe-template/closing-background.png",
-        width: 959.75pt,
-        height: 540pt,
+        width: 958.673622pt,
+        height: 539.253858pt,
+        fit: "stretch",
       )),
     ),
     config-common(subslide-preamble: none),
@@ -1058,6 +1095,7 @@
     "assets/universe-template/github-mark.svg",
     width: 94.178pt,
     height: 91.06pt,
+    fit: "stretch",
   ))
   #place(top + left, dx: 322.68pt, dy: 187.863pt, block(width: 438.3pt, height: 116.274pt)[
     #align(left + horizon)[
