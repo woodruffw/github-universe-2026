@@ -1024,7 +1024,7 @@
 #speaker-note[
   - Here's an important thing I want to impart, in case I haven't: zizmor should not exist!
   - Throughout this talk, I've yammered about _secure defaults_. Tools, especially third-party tools, are not secure defaults.
-  - They are stopgaps. Important and even necessary stopgaps perhaps, but stopgaps nonetheless.
+  - They are stopgaps. Important and even necessary stopgaps, but stopgaps nonetheless.
   - Nothing would make me happier than for it to become a relic of the past, in the same way that we increasingly talk about memory safety as a property of languages and systems rather than something approximated through sanitizers and fuzzing.
 ]
 
