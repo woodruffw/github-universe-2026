@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>name</key><string>Universe Light</string>
+  <!-- Token colors copied from the light Developer Code sample (slide 122). -->
+  <key>settings</key>
+  <array>
+    <dict><key>settings</key><dict>
+      <key>foreground</key><string>#000000</string>
+      <key>background</key><string>#F3F6F2</string>
+    </dict></dict>
+    <dict><key>scope</key><string>keyword, storage, constant.language</string><key>settings</key><dict>
+      <key>foreground</key><string>#0000FF</string>
+    </dict></dict>
+    <dict><key>scope</key><string>keyword.control</string><key>settings</key><dict>
+      <key>foreground</key><string>#AF00DB</string>
+    </dict></dict>
+    <dict><key>scope</key><string>variable, entity.name.tag, entity.name.type, support.type</string><key>settings</key><dict>
+      <key>foreground</key><string>#001080</string>
+    </dict></dict>
+    <dict><key>scope</key><string>entity.name.function, support.function</string><key>settings</key><dict>
+      <key>foreground</key><string>#795E26</string>
+    </dict></dict>
+    <dict><key>scope</key><string>string</string><key>settings</key><dict>
+      <key>foreground</key><string>#A31515</string>
+    </dict></dict>
+    <dict><key>scope</key><string>comment</string><key>settings</key><dict>
+      <key>foreground</key><string>#515E68</string>
+    </dict></dict>
+  </array>
+</dict>
+</plist>

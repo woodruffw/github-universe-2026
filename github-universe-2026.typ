@@ -1,14 +1,28 @@
 #import "@preview/touying:0.7.4": *
-#import themes.simple: *
+#import "universe-theme.typ": (
+  code-right-slide, code-slide, slide, speaker-slide, text-slide, title-slide, universe, universe-theme, untitled-slide,
+)
 #import "@preview/herodot:1.0.0": *
 #import "@preview/pinit:0.2.2": *
 #import "presenter-gif.typ": gif
 
-#let rounded-image(path, radius: 12pt, ..args) = box(
+#let rounded-image(path, radius: 6pt, ..args) = box(
   radius: radius,
   clip: true,
   image(path, ..args),
 )
+
+// Fit a stack at a shared width, preserving each image's full aspect ratio.
+#let stacked-images(paths, gap: 16pt) = layout(size => {
+  let ratio = paths
+    .map(path => measure(image(path, width: 1pt)).height / 1pt)
+    .fold(0, (total, height) => total + height)
+  let width = calc.min(size.width, (size.height - gap * (paths.len() - 1)) / ratio)
+  align(center + horizon, grid(
+    columns: (width,), row-gutter: gap,
+    ..paths.map(path => rounded-image(path, width: width)),
+  ))
+})
 
 #let smaller-speaker-notes(
   self: none,
@@ -46,25 +60,14 @@
   }
 }
 
-#let larger-section-slide(config: (:), body) = centered-slide(config: config, [
-  #text(size: 2.4em, weight: "bold", utils.display-current-heading(level: 1))
-
-  #body
-])
-
-#show: simple-theme.with(
-  aspect-ratio: "16-9",
-  header: none,
-  footer: "github universe 2026",
-  footer-right: "security by default: a maintainer's wishlist for GitHub Actions v2",
+#show: universe-theme.with(
   config-info(
     title: [security by default],
     subtitle: [or: a maintainer's wishlist for GitHub Actions v2],
-    author: [william woodruff],
+    author: [William Woodruff],
     date: datetime.today(),
   ),
   config-common(
-    new-section-slide-fn: larger-section-slide,
     receive-body-for-new-section-slide-fn: true,
     show-notes-on-second-screen: right,
   ),
@@ -73,23 +76,29 @@
   ),
 )
 
-#set text(font: "Inter")
-
 #let chart-source(body) = block(width: 100%, above: 0.4em, below: 0pt)[
-  #align(left)[
-    #text(size: 0.55em, fill: gray)[#body]
+  #align(center)[
+    #text(size: 0.55em, fill: universe.muted)[#body]
   ]
 ]
 
-#title-slide[
-  #touying-fn-wrapper((self: none) => stack(
-    dir: ttb,
-    spacing: .9em,
-    text(size: 2em, weight: "bold", self.info.title),
-    self.info.subtitle,
-    1em,
-    text(size: .85em, fill: self.colors.neutral-light, emph(self.info.author)),
-  ))
+#title-slide(
+  photo: "assets/me.jpg",
+  role: [Member of Technical Staff],
+  company: [OpenAI],
+)[
+  #touying-fn-wrapper((self: none) => {
+    place(top + left, dx: 138.789pt, dy: 15pt, block(width: 806.172pt)[
+      #set par(leading: 0.15em)
+      #set text(top-edge: "ascender")
+      #grid(
+        columns: (1fr,),
+        row-gutter: 24pt,
+        text(font: "Mona Sans Display", size: 72pt, self.info.title),
+        text(font: "Mona Sans Display", size: 32pt, self.info.subtitle),
+      )
+    ])
+  })
 ]
 
 #speaker-note[
@@ -98,41 +107,31 @@
 
 == intro
 
-#align(horizon)[
-  #move(dy: -0.5em)[
-    #grid(
-      columns: (1.66fr, 2fr),
-      gutter: 2em,
-      align: center + horizon,
-      [
-        #rounded-image("assets/me.jpg", width: 100%)
-      ],
-      [
-        #grid(
-          columns: (1fr, 1fr),
-          column-gutter: 1.5em,
-          row-gutter: 0.65em,
-          align: center + horizon,
-          grid.cell(colspan: 2)[
-            #image("assets/zizmor.png", width: 65%)
-          ],
-          [
-            #image("assets/oai.png", height: 3.6em)
-          ],
-          [
-            #rounded-image("assets/astral.png", width: 3.4em, height: 3.4em)
-          ],
-
-          [
-            #image("assets/brew.svg", height: 3.8em)
-          ],
-          [
-            #image("assets/pypi.svg", height: 3.2em)
-          ],
-        )
-      ],
-    )
-  ]
+#speaker-slide("assets/me.jpg", role: [Open Source Maintainer / MTS, OpenAI])[
+  #grid(
+    columns: (1fr, 1fr),
+    column-gutter: 1.5em,
+    row-gutter: 0.65em,
+    align: center + horizon,
+    grid.cell(colspan: 2)[
+      #image("assets/zizmor.png", width: 65%)
+    ],
+    [
+      // Compensate for the logo's baked-in white margins.
+      #box(width: 3.4em, height: 3.4em, clip: true)[
+        #place(center + horizon, image("assets/oai.png", width: 6.8em))
+      ]
+    ],
+    [
+      #rounded-image("assets/astral.png", width: 3.4em, height: 3.4em)
+    ],
+    [
+      #image("assets/brew.svg", height: 3.8em)
+    ],
+    [
+      #image("assets/pypi.svg", height: 3.2em)
+    ],
+  )
 ]
 
 #speaker-note[
@@ -145,14 +144,9 @@
 
 == #emoji.rainbow zizmor
 
-// Shift the image and commands up together, leaving more room above the footer.
-#v(-0.75em)
-
 #block(width: 100%, height: 1fr, below: 0.2em)[
   #image("assets/zizmor-cli-1.png", width: 100%, height: 100%, fit: "contain")
 ]
-
-#v(0.75em)
 
 #speaker-note[
   - Actually, I kind of buried the lede a bit.
@@ -172,7 +166,7 @@
     column-gutter: 1em,
     align: (center + horizon, left + horizon),
     [
-      #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+      #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
         #rounded-image("assets/catullus.jpg", height: 100%)
       ]
     ],
@@ -181,11 +175,11 @@
       #show quote.where(block: true): it => block(
         width: 100%,
         inset: (left: 0.8em),
-        stroke: (left: 2pt + rgb("#D8D8D8")),
+        stroke: (left: 2pt + universe.line),
         it.body,
       )
       #quote(block: true)[
-        #text(font: "Libertinus Serif", size: 23pt, style: "italic")[
+        #text(font: "Mona Sans Display", size: 23pt, style: "italic")[
           Ōdī et amō. \
           Quārē id faciam fortasse requīris. \
           Nesciŏ, sed fierī sentiō et excrucior.
@@ -193,7 +187,7 @@
 
         #v(0.6em)
 
-        #text(size: 19pt, fill: rgb("#555555"))[
+        #text(size: 19pt, fill: universe.muted)[
           I love and I hate. Why, you might ask? \
           I do not know, \
           but I feel and am tortured.
@@ -201,7 +195,7 @@
 
         #v(0.5em)
 
-        #text(size: 15pt, fill: rgb("#777777"))[Catullus _85_]
+        #text(size: 15pt, fill: universe.muted)[Catullus _85_]
       ]
     ],
   )
@@ -217,7 +211,7 @@
 
 = #emoji.heart amō
 
-#text(size: 1.1em, fill: rgb("#777777"))[
+#text(size: 1.1em, fill: universe.muted)[
   _"i love"_
 ]
 
@@ -229,20 +223,15 @@
 
 #block(width: 100%, height: 1fr)[
   #grid(
-    columns: (1fr, 1.15fr),
+    columns: (1fr, 1fr),
     rows: (1fr,),
     column-gutter: 1em,
     align: center + horizon,
     [
-      #rounded-image("assets/predator.jpg", width: 100%)
+      #rounded-image("assets/predator.jpg", height: 100%)
     ],
     [
-      #stack(
-        dir: ttb,
-        spacing: 0.65em,
-        rounded-image("assets/typical-matrix.png", width: 100%),
-        rounded-image("assets/lots-of-yaml.png", width: 100%),
-      )
+      #stacked-images(("assets/typical-matrix.png", "assets/lots-of-yaml.png"))
     ],
   )
 ]
@@ -255,35 +244,26 @@
 
 == #emoji.heart amō
 
-#block(width: 100%, height: 1fr)[
-  #grid(
-    columns: (1fr, 1fr),
-    rows: (1fr,),
-    column-gutter: 1em,
-    align: (center + horizon, left + horizon),
-    [
-      #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
-        #rounded-image("assets/tp-enroll.png", height: 100%)
-      ]
-    ],
-    [
-      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.65em)[
-        #show raw: set text(size: 20pt)
-        ```yaml
-        jobs:
-          # look ma, no secrets
-          publish:
-            permissions:
-              id-token: write
-            steps:
-              - run: "# ..."
-              - run: "uv build"
-              - run: "uv publish"
-        ```
-      ]
-    ],
-  )
-]
+#code-right-slide(
+  [
+    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
+      #rounded-image("assets/tp-enroll.png", height: 100%)
+    ]
+  ],
+  [
+    ```yaml
+    jobs:
+      # look ma, no secrets
+      publish:
+        permissions:
+          id-token: write
+        steps:
+          - run: "# ..."
+          - run: "uv build"
+          - run: "uv publish"
+    ```
+  ],
+)
 
 #speaker-note[
   - Real-world examples of these positive qualities abound.
@@ -297,7 +277,7 @@
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
       #rounded-image("assets/cryptography-wheels.png", height: 100%)
     ]
   ]
@@ -313,19 +293,18 @@
 == power
 
 #block(width: 100%, height: 1fr)[
-  #grid(
-    columns: (1fr, 1fr),
+  #layout(size => grid(
+    columns: (size.height * 828 / 672, 1fr),
     rows: (1fr,),
     column-gutter: 1em,
     align: center + horizon,
     [
-      #rounded-image("assets/matrix.png", width: 100%)
+      #rounded-image("assets/matrix.png", height: 100%)
     ],
     [
-      #rounded-image("assets/permissions.png", width: 100%)
-      #rounded-image("assets/root.png", width: 100%)
+      #stacked-images(("assets/permissions.png", "assets/root.png"))
     ],
-  )
+  ))
 ]
 
 #speaker-note[
@@ -338,7 +317,7 @@
 
 = #emoji.face.angry ōdī
 
-#text(size: 1.1em, fill: rgb("#777777"))[
+#text(size: 1.1em, fill: universe.muted)[
   _"i hate"_
 ]
 
@@ -353,23 +332,25 @@
 
 == #emoji.face.angry ōdī
 
-#v(0.5em)
+#text-slide[
+  #v(18pt)
 
-#block(width: 95%)[
-  #set text(size: 30pt)
-  #set list(spacing: 0.9em)
-  #show list: it => {
-    show list: set text(size: 20pt, fill: rgb("#555555"))
-    show list: set block(above: 0.3em, below: 0pt)
-    it
-  }
+  #block(width: 95%)[
+    #set text(size: 30pt)
+    #set list(spacing: 0.9em)
+    #show list: it => {
+      show list: set text(size: 20pt, fill: universe.muted)
+      show list: set block(above: 0.3em, below: 0pt)
+      it
+    }
 
-  - insecure platform defaults and footguns
-    - or: "i need a tool to solve what the platform should solve for me"
-  - insecure community practices
-    - or: "my entire CI/CD depends on mystery meat from `curl | bash`"
-  - reliability and availability
-    - or "if i see one more outage/slop pr i'm going back to self hosting"
+    - insecure platform defaults and footguns
+      - or: "i need a tool to solve what the platform should solve for me"
+    - insecure community practices
+      - or: "my entire CI/CD depends on mystery meat from `curl | bash`"
+    - reliability and availability
+      - or "if i see one more outage/slop pr i'm going back to self hosting"
+  ]
 ]
 
 #speaker-note[
@@ -390,18 +371,20 @@
 
 == (insecure) platform defaults and footguns
 
-```yaml
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - run: cargo build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: .
-```
+#code-slide[
+  ```yaml
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v5
+        - run: cargo build
+        - uses: actions/upload-artifact@v4
+          with:
+            name: build
+            path: .
+  ```
+]
 
 #speaker-note[
   - Let's start on the smaller end of things.
@@ -411,28 +394,29 @@ jobs:
 
 == (insecure) platform defaults
 
-#align(center + horizon)[
-  #show raw: set text(size: 15pt)
-  #set par(leading: 0.3em)
+#code-slide[
+  #align(left + top)[
+    #set par(leading: 0.3em)
 
-  ```
-  $ zizmor example-workflows/artipacked.yml
-  error[artipacked]: credential persistence through GitHub Actions artifacts
-    --> example-workflows/artipacked.yml:9:9
-     |
-   9 |         - uses: actions/checkout@v5
-     |           ^^^^^^^^^^^^^^^^^^^^^^^^^ does not set persist-credentials: false
-  10 |         - run: cargo build
-  11 |         - uses: actions/upload-artifact@v4.3.5
-     |  _________-
-  12 | |         with:
-  13 | |           name: build
-  14 | |           path: .
-     | |__________________- may leak the credentials persisted above
-     |
-     = note: audit confidence → High
-     = note: this finding has an auto-fix
-  ```
+    ```
+    $ zizmor example-workflows/artipacked.yml
+    error[artipacked]: credential persistence through GitHub Actions artifacts
+      --> example-workflows/artipacked.yml:9:9
+       |
+     9 |         - uses: actions/checkout@v5
+       |           ^^^^^^^^^^^^^^^^^^^^^^^^^ does not set persist-credentials: false
+    10 |         - run: cargo build
+    11 |         - uses: actions/upload-artifact@v4.3.5
+       |  _________-
+    12 | |         with:
+    13 | |           name: build
+    14 | |           path: .
+       | |__________________- may leak the credentials persisted above
+       |
+       = note: audit confidence → High
+       = note: this finding has an auto-fix
+    ```
+  ]
 ]
 
 #speaker-note[
@@ -447,7 +431,7 @@ jobs:
 
 == (insecure) platform defaults
 
-#slide(config: config-common(subslide-preamble: none))[
+#untitled-slide[
   #align(center + horizon)[
     #grid(
       columns: (1fr, 1.6fr),
@@ -482,19 +466,20 @@ jobs:
 
 == (insecure) platform defaults
 
-#align(center + horizon)[
-  #show raw: set text(size: 25pt)
+#code-slide[
+  #align(left + top)[
 
-  // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
-  ```yaml
-  jobs:
-    test:
-      runs-on: ubuntu-latest
-      steps:
-        - name: checkout
-          uses: actions/checkout@c7d749a2… # v7.0.0
-        - run: make test
-  ```
+    // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
+    ```yaml
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - name: checkout
+            uses: actions/checkout@c7d749a2… # v7.0.0
+          - run: make test
+    ```
+  ]
 ]
 
 #speaker-note[
@@ -506,9 +491,8 @@ jobs:
 
 == (insecure) platform defaults
 
-#slide(config: config-common(subslide-preamble: none))[
+#untitled-slide[
   #align(center + horizon)[
-    #show raw: set text(size: 21pt)
     #set par(leading: 0.5em)
 
     // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
@@ -563,16 +547,18 @@ jobs:
 
 == footguns
 
-```yaml
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: important step
-        run: echo "It's really important to secure this"
-        if: |
-          ${{ github.event.name == 'push' }}
-```
+#code-slide[
+  ```yaml
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: important step
+          run: echo "It's really important to secure this"
+          if: |
+            ${{ github.event.name == 'push' }}
+  ```
+]
 
 #speaker-note[
   - One last example before we move to the next domain.
@@ -582,17 +568,19 @@ jobs:
 
 == footguns
 
-```
-error[unsound-condition]: unsound conditional expression
-  --> example-workflows/unsound-condition.yml:9:9
-   |
- 9 | /         if: |
-10 | |           ${{ github.event.name == 'push' }}
-   | |_____________________________________________^ condition always evaluates to true
-   |
-   = note: audit confidence → High
-   = note: this finding has an auto-fix
-```
+#code-slide[
+  ```
+  error[unsound-condition]: unsound conditional expression
+    --> example-workflows/unsound-condition.yml:9:9
+     |
+   9 | /         if: |
+  10 | |           ${{ github.event.name == 'push' }}
+     | |_____________________________________________^ condition always evaluates to true
+     |
+     = note: audit confidence → High
+     = note: this finding has an auto-fix
+  ```
+]
 
 #speaker-note[
   - As you've doubtless surmised, this workflow is vulnerable. This is what zizmor would show you for it.
@@ -603,31 +591,22 @@ error[unsound-condition]: unsound conditional expression
 
 == footguns
 
-#block(width: 100%, height: 1fr)[
-  #grid(
-    columns: (1fr, 1.4fr),
-    rows: (1fr,),
-    column-gutter: 1em,
-    align: (center + horizon, left + horizon),
-    [
-      #box(width: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
-        #rounded-image("assets/drake.jpg", width: 100%)
-      ]
-    ],
-    [
-      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.55em)[
-        #show raw: set text(size: 22pt)
-        ```
-        ${{
-          github.event.name == 'push'
-            && ''
-            || 'bar'
-        }}
-        ```
-      ]
-    ],
-  )
-]
+#code-right-slide(
+  [
+    #box(width: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
+      #rounded-image("assets/drake.jpg", width: 100%)
+    ]
+  ],
+  [
+    ```
+    ${{
+      github.event.name == 'push'
+        && ''
+        || 'bar'
+    }}
+    ```
+  ],
+)
 
 #speaker-note[
   - That's a funny example because of how obviously wrong it is, but there are actually quite a few of these footguns in the Actions expression language.
@@ -637,33 +616,24 @@ error[unsound-condition]: unsound conditional expression
 
 == footguns
 
-#block(width: 100%, height: 1fr)[
-  #grid(
-    columns: (1fr, 1.4fr),
-    rows: (1fr,),
-    column-gutter: 1em,
-    align: (center + horizon, left + horizon),
-    [
-      #box(width: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
-        #rounded-image("assets/drake.jpg", width: 100%)
-      ]
-    ],
-    [
-      #block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: 0.55em)[
-        #show raw: set text(size: 22pt)
-        ```yaml
-        if: ${{
-            contains(
-              'refs/heads/main
-               refs/heads/develop',
-              github.ref
-            )
-          }}
-        ```
-      ]
-    ],
-  )
-]
+#code-right-slide(
+  [
+    #box(width: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
+      #rounded-image("assets/drake.jpg", width: 100%)
+    ]
+  ],
+  [
+    ```yaml
+    if: ${{
+        contains(
+          'refs/heads/main
+           refs/heads/develop',
+          github.ref
+        )
+      }}
+    ```
+  ],
+)
 
 #speaker-note[
   - A third example: GitHub provides the `contains()` function for checking whether or an array or string contains some element.
@@ -685,27 +655,22 @@ error[unsound-condition]: unsound conditional expression
 
 == YOLO binaries
 
-#v(-0.4em)
-
-#align(center + top)[
-  #show raw: set text(size: 20pt)
-  #show raw.where(block: true): set block(above: 0.6em, below: 0pt)
-  #set par(leading: 0.25em)
-
-  #stack(
-    spacing: 1.25em,
-    block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: (x: 0.8em, y: 0.4em))[
-      #set align(left)
-      #text(size: 20pt, weight: "semibold", fill: rgb("#334155"))[what the user sees]
-
+#code-slide[
+  #let example(caption, body) = block(width: 100%, height: 100%)[
+    #text(size: 14pt, font: "Mona Sans Mono", fill: universe.muted)[#upper(caption)]
+    #v(8pt)
+    #block(width: 100%, height: 1fr, above: 0pt, below: 0pt)[#body]
+  ]
+  #grid(
+    columns: (1fr,),
+    rows: (65pt, 1fr),
+    row-gutter: 24pt,
+    example([what the user sees])[
       ```yaml
       - uses: example/setup-gizmo@abcd... # v1.0.0
       ```
     ],
-    block(width: 100%, fill: rgb("#F5F5F5"), radius: 12pt, inset: (x: 0.8em, y: 0.4em))[
-      #set align(left)
-      #text(size: 20pt, weight: "semibold", fill: rgb("#334155"))[what the action runs]
-
+    example([what the action runs])[
       ```yaml
       inputs:
         version:
@@ -731,15 +696,20 @@ error[unsound-condition]: unsound conditional expression
 
 == YOLO binaries
 
-#slide(config: config-page(margin: (x: 2em, top: 1em, bottom: 2em)))[
-  #v(-0.6em)
-
+#slide[
   #block(width: 100%, height: 1fr)[
     #align(center)[
-      // Fill the slide area by cropping the image's blank top and bottom margins.
-      #box(width: 100%, height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
-        #rounded-image("assets/frog-and-toad.png", width: 100%, height: 100%, fit: "cover")
-      ]
+      // Crop only blank margins (source rows 160–880); retain every line of the meme.
+      #layout(size => {
+        let width = size.height * 1536 / 720
+        box(width: width, height: size.height, radius: 7pt, stroke: 1pt + universe.line, clip: true)[
+          #place(top + left, dy: -size.height * 160 / 720, image(
+            "assets/frog-and-toad.png",
+            width: width,
+            height: size.height * 1024 / 720,
+          ))
+        ]
+      })
     ]
   ]
 ]
@@ -755,26 +725,24 @@ error[unsound-condition]: unsound conditional expression
 
 == YOLO binaries
 
-#slide(config: config-common(subslide-preamble: none))[
+#untitled-slide[
   #block(width: 100%, height: 1fr)[
-    #grid(
-      columns: (1fr,),
-      rows: (auto, 1fr),
-      row-gutter: 0.5em,
-      align: center + horizon,
-      [
-        #layout(size => {
-          let width = size.width * 75%
+    #layout(size => {
+      let width = calc.min(size.width, (size.height - 16pt) / (340 / 1830 + 590 / 1262))
+      align(center + horizon, grid(
+        columns: (width,),
+        row-gutter: 16pt,
+        {
           // Keep the byline and title: the top 340px of the 1830px-wide screenshot.
-          box(width: width, height: width * 340 / 1830, radius: 12pt, clip: true)[
+          box(width: width, height: width * 340 / 1830, radius: 6pt, clip: true)[
             #place(top + left)[
               #image("assets/nesbitt1.png", width: width, height: width * 540 / 1830)
             ]
           ]
-        })
-      ],
-      [#rounded-image("assets/nesbitt2.png", height: 100%)],
-    )
+        },
+        rounded-image("assets/nesbitt2.png", width: width),
+      ))
+    })
   ]
 ]
 
@@ -788,17 +756,20 @@ error[unsound-condition]: unsound conditional expression
 
 == YOLO binaries
 
-```
-help[adhoc-packages]: ad-hoc installation of packages
-  --> example-workflows/adhoc-package.yml:11:11
-   |
-10 |         run: |
-   |         --- this step
-11 |           npm install prettier
-   |           ^^^^^^^^^^^^^^^^^^^^ installs a package outside of a lockfile
-   |
-   = note: audit confidence → High
-```
+#code-slide[
+  ```
+  help[adhoc-packages]: ad-hoc installation of packages
+    --> example-workflows/adhoc-package.yml:11:11
+     |
+  10 |         run: |
+     |         --- this step
+  11 |           npm install prettier
+     |           ^^^^^^^^^^^^^^^^^^^^ installs a package outside of a lockfile
+     |
+     = note: audit confidence → High
+  ```
+]
+
 #speaker-note[
   - It would of course be remiss of me not to mention that zizmor will flag many of these YOLO binary patterns.
   - zizmor will also flag similar patterns on the workflow side, for example when you've used `npm install` or `pip install` to install a tool in an ad-hoc manner rather than putting it in a proper lockfile.
@@ -806,18 +777,20 @@ help[adhoc-packages]: ad-hoc installation of packages
 
 == javascript actions
 
-```yaml
-name: "some-cool-action"
-description: "Deletes your kubernetes cluster"
-inputs:
-  github-token:
-    description: The GitHub API token to use
-    default: ${{ github.token }}
-runs:
-  using: node24
-  main: dist/index.js
-  post: dist/index.js
-```
+#code-slide[
+  ```yaml
+  name: "some-cool-action"
+  description: "Deletes your kubernetes cluster"
+  inputs:
+    github-token:
+      description: The GitHub API token to use
+      default: ${{ github.token }}
+  runs:
+    using: node24
+    main: dist/index.js
+    post: dist/index.js
+  ```
+]
 
 #speaker-note[
   - Now for a slightly spicier one.
@@ -829,14 +802,8 @@ runs:
 
 == javascript actions
 
-#v(-0.4em)
-
-#align(center + horizon)[
-  #stack(
-    spacing: 0.75em,
-    rounded-image("assets/checkout.png", width: 100%),
-    rounded-image("assets/large-js.png", width: 100%),
-  )
+#block(width: 100%, height: 1fr)[
+  #stacked-images(("assets/checkout.png", "assets/large-js.png"))
 ]
 
 #speaker-note[
@@ -851,7 +818,7 @@ runs:
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #box(height: 100%, fill: rgb("#334155"), radius: 17pt, inset: 5pt)[
+    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
       #rounded-image("assets/future.jpeg", height: 100%)
     ]
   ]
@@ -894,19 +861,21 @@ runs:
 
 == reliability and availability...as security?
 
-#v(0.5em)
+#text-slide[
+  #v(18pt)
 
-#block(width: 95%)[
-  #set text(size: 30pt)
-  #set list(spacing: 0.9em)
-  #show list: it => {
-    show list: set text(size: 20pt, fill: rgb("#555555"))
-    show list: set block(above: 0.3em, below: 0pt)
-    it
-  }
+  #block(width: 95%)[
+    #set text(size: 30pt)
+    #set list(spacing: 0.9em)
+    #show list: it => {
+      show list: set text(size: 20pt, fill: universe.muted)
+      show list: set block(above: 0.3em, below: 0pt)
+      it
+    }
 
-  - oops, the maintainers are shifting right again
-  - spoliation of the commons
+    - oops, the maintainers are shifting right again
+    - spoliation of the commons
+  ]
 ]
 
 #speaker-note[
@@ -953,7 +922,7 @@ runs:
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #move(dy: -0.5em)[
+    #block[
       #rounded-image("assets/ghsa-spam.png", height: 100%)
     ]
   ]
@@ -972,16 +941,14 @@ runs:
 
 == de-spoiling the commons
 
-#slide(config: utils.merge-dicts(
-  config-page(margin: (x: 0.75em, y: 2em)),
-  config-common(subslide-preamble: none),
-))[
+#untitled-slide[
   #block(width: 100%, height: 1fr)[
     #grid(
-      columns: (1fr, 1fr),
+      // Proportional columns give the bottom screenshots the same height.
+      columns: (1790 / 484 * 1fr, 1792 / 514 * 1fr),
       rows: (1fr, auto),
-      column-gutter: 0.5em,
-      row-gutter: 0.65em,
+      column-gutter: 16pt,
+      row-gutter: 16pt,
       align: center + horizon,
       grid.cell(colspan: 2)[
         #rounded-image("assets/nudnik.png", height: 100%)
@@ -1013,7 +980,7 @@ runs:
 
 #block(width: 100%, height: 1fr)[
   #align(center)[
-    #move(dy: -0.5em)[
+    #block[
       #rounded-image("assets/secure-defaults.png", height: 100%)
     ]
   ]
@@ -1028,24 +995,25 @@ runs:
 
 == security by default
 
-#align(center + horizon)[
-  #move(dy: -1em)[
-    #show raw: set text(size: 16pt)
-    #set par(leading: 0.55em)
+#code-slide[
+  #align(left + top)[
+    #block[
+      #set par(leading: 0.55em)
 
-    ```
-    To github.com:username/repo.git
-     ! [rejected]        main -> main
-    error: failed to push some refs to 'git@github.com:username/repo.git'
-    hint: Updates were rejected because the remote does not believe that they
-    hint: are secure. Remote reports:
-    hint:
-    hint: ref main: .github/workflows/ci.yml:123 uses an impostor commit
-    hint: ref main: .github/workflows/test.yml:456 has an unsound `if` condition
-    hint:
-    hint: Fix these problems or configure the remote to bypass them and accept
-    hint: their risk before pushing again.
-    ```
+      ```
+      To github.com:username/repo.git
+       ! [rejected]        main -> main
+      error: failed to push some refs to 'git@github.com:username/repo.git'
+      hint: Updates were rejected because the remote does not believe that they
+      hint: are secure. Remote reports:
+      hint:
+      hint: ref main: .github/workflows/ci.yml:123 uses an impostor commit
+      hint: ref main: .github/workflows/test.yml:456 has an unsound `if` condition
+      hint:
+      hint: Fix these problems or configure the remote to bypass them and accept
+      hint: their risk before pushing again.
+      ```
+    ]
   ]
 ]
 
@@ -1076,38 +1044,43 @@ runs:
     config-page(
       header: none,
       footer: none,
-      margin: (x: 1.25em, y: 1em),
+      margin: 0pt,
+      background: place(top + left, image(
+        "assets/universe-template/closing-background.png",
+        width: 959.75pt,
+        height: 540pt,
+      )),
     ),
     config-common(subslide-preamble: none),
   ),
 )[
-  #let qr-link(path, caption) = grid(
-    columns: (8.2em, 1fr),
-    column-gutter: 0.3em,
-    align: left + horizon,
-    image(path, width: 100%), text(size: 0.85em)[#caption],
-  )
+  #place(top + left, dx: 206.089pt, dy: 200.47pt, image(
+    "assets/universe-template/github-mark.svg",
+    width: 94.178pt,
+    height: 91.06pt,
+  ))
+  #place(top + left, dx: 322.68pt, dy: 187.863pt, block(width: 438.3pt, height: 116.274pt)[
+    #align(left + horizon)[
+      #text(font: "Mona Sans Display", size: 89.96pt, weight: "regular")[thank you!]
+    ]
+  ])
 
-  #block(width: 100%, height: 1fr)[
+  #let qr-link(path, caption) = block(width: 190pt, fill: white, inset: (x: 8pt, y: 10pt))[
     #grid(
-      columns: (6em, 1fr),
-      rows: (1fr,),
-      column-gutter: 0.75em,
-      align: left + horizon,
-      [
-        #set par(leading: 0.15em)
-        #text(size: 2em, weight: "bold")[thank \ you!]
-      ],
-      [
-        #grid(
-          columns: (1fr, 1fr),
-          rows: (1fr, 1fr),
-          gutter: 0.4em,
-          align: left + horizon,
-          qr-link("assets/slides-qr.png", [slides]), qr-link("assets/personal-website-qr.png", [personal website]),
-          qr-link("assets/blog-qr.png", [blog]), qr-link("assets/zizmor-qr.png", [zizmor]),
-        )
-      ],
+      columns: (1fr,),
+      rows: (154pt, 18pt),
+      row-gutter: 8pt,
+      align: center + horizon,
+      image(path, width: 154pt),
+      text(font: "Mona Sans Mono", size: 14pt)[#caption],
     )
   ]
+  #place(top + left, dx: 45.875pt, dy: 315pt, grid(
+    columns: (190pt, 190pt, 190pt, 190pt),
+    column-gutter: 36pt,
+    qr-link("assets/slides-qr.png", [slides]),
+    qr-link("assets/personal-website-qr.png", [personal website]),
+    qr-link("assets/blog-qr.png", [blog]),
+    qr-link("assets/zizmor-qr.png", [zizmor]),
+  ))
 ]
