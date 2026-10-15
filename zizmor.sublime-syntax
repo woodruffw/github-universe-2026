@@ -1,0 +1,94 @@
+%YAML 1.2
+---
+name: Zizmor diagnostics
+file_extensions: [zizmor]
+scope: source.zizmor
+
+# Mirrors zizmor --color always: 1;91 errors, 1;96 help, 1;94 gutters
+# and secondary annotations, and 1 for diagnostic titles and note labels.
+# Source excerpts stay plain, including YAML strings, keys, and comments.
+contexts:
+  main:
+    - include: headers
+
+  headers:
+    - match: '^(error\[[^\]]+\])(:.*)$'
+      captures:
+        1: zizmor.error
+        2: zizmor.bold
+      set: [error, title-continuation]
+    - match: '^(help\[[^\]]+\])(:.*)$'
+      captures:
+        1: zizmor.help
+        2: zizmor.bold
+      set: [help, title-continuation]
+
+  # Allows the slide's manually wrapped diagnostic title to keep its weight.
+  title-continuation:
+    - match: '^(?=[ \t]*(?:$|-->|[0-9]*[ \t]*\|))'
+      pop: true
+    - match: '^.+$'
+      scope: zizmor.bold
+
+  error:
+    - include: headers
+    # A primary multiline span begins with / on a numbered source line.
+    - match: '^([ \t]*\d+[ \t]+\|)([ \t]+/)'
+      captures:
+        1: zizmor.gutter
+        2: zizmor.error
+      push: error-span
+    - match: '^([ \t]*\|)([ \t]+)([|_]*\^.*)$'
+      captures:
+        1: zizmor.gutter
+        3: zizmor.error
+      push: error-continuation
+    - include: common
+
+  error-span:
+    - match: '^([ \t]*\|)([ \t]+)([|_]*\^.*)$'
+      captures:
+        1: zizmor.gutter
+        3: zizmor.error
+      set: error-continuation
+    - match: '^([ \t]*\d+[ \t]+\|)([ \t]+\|)'
+      captures:
+        1: zizmor.gutter
+        2: zizmor.error
+    - include: common
+
+  # The impostor diagnostic's annotation is wrapped onto two more lines.
+  error-continuation:
+    - match: '^([ \t]*\|)([ \t]+)([^\s|_^-].*)$'
+      captures:
+        1: zizmor.gutter
+        3: zizmor.error
+    - match: '^'
+      pop: true
+
+  help:
+    - include: headers
+    - match: '^([ \t]*\|)([ \t]+)([|_]*\^.*)$'
+      captures:
+        1: zizmor.gutter
+        3: zizmor.help
+    - include: common
+
+  common:
+    - match: '^[ \t]*-->[ \t]'
+      scope: zizmor.gutter
+    - match: '^([ \t]*=[ \t]+)(note)(:)'
+      captures:
+        1: zizmor.gutter
+        2: zizmor.bold
+    # Secondary spans end in a dash, rather than a primary caret.
+    - match: '^([ \t]*\|)([ \t]+)([|_]*-.*)$'
+      captures:
+        1: zizmor.gutter
+        3: zizmor.secondary
+    - match: '^([ \t]*\d+[ \t]+\|)([ \t]+\|)?'
+      captures:
+        1: zizmor.gutter
+        2: zizmor.secondary
+    - match: '^[ \t]*\|'
+      scope: zizmor.gutter

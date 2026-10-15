@@ -264,9 +264,14 @@
     config-methods(init: (self: none, body) => {
       set text(font: "Mona Sans", size: 21.99pt, weight: "regular", fill: black)
       set par(leading: 0.22em)
-      set raw(theme: "universe-code.tmTheme")
+      set raw(theme: "universe-code.tmTheme", syntaxes: "zizmor.sublime-syntax")
       // Keep operators literal: the release's code ligatures collapse == to =.
       show raw: set text(font: "Mona Sans Mono", ligatures: false, features: (calt: 0))
+      show raw.where(lang: "zizmor"): it => {
+        // Touying colors strong text green; ANSI bold keeps the default ink.
+        show strong: body => text(weight: "bold", body.body)
+        it
+      }
       show raw.where(block: true): set text(size: 23.99pt, top-edge: "ascender")
       show raw.where(block: true): set par(leading: 0pt)
       show raw.where(block: true): fit-code

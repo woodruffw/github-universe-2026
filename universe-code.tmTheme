@@ -28,6 +28,23 @@
     <dict><key>scope</key><string>comment</string><key>settings</key><dict>
       <key>foreground</key><string>#515E68</string>
     </dict></dict>
+    <!-- Zizmor's ANSI roles, using a palette readable on the light slides. -->
+    <dict><key>scope</key><string>zizmor.bold</string><key>settings</key><dict>
+      <key>foreground</key><string>#000000</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
+    <dict><key>scope</key><string>zizmor.error</string><key>settings</key><dict>
+      <key>foreground</key><string>#CF222E</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
+    <dict><key>scope</key><string>zizmor.gutter, zizmor.secondary</string><key>settings</key><dict>
+      <key>foreground</key><string>#0969DA</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
+    <dict><key>scope</key><string>zizmor.help</string><key>settings</key><dict>
+      <key>foreground</key><string>#007A85</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
   </array>
 </dict>
 </plist>

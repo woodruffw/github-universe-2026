@@ -15,6 +15,10 @@ PowerPoint template. `universe-theme.typ` defines the template's page geometry,
 typography, footer, title slide, section dividers, and developer code panels.
 Code blocks scale to fit their available space without changing line breaks.
 `universe-code.tmTheme` uses the light template's syntax colors.
+Diagnostic blocks tagged `zizmor` use `zizmor.sublime-syntax` to reproduce
+zizmor's ANSI emphasis: red errors, blue gutters and secondary annotations,
+cyan help, and bold titles and note labels. The diagnostic palette is adapted
+for the light background. Source excerpts remain plain, as in the CLI output.
 Image slides use the template's Title and Image frame; text slides use Title
 and Content. The title card includes the speaker portrait, and the introduction
 uses Speaker bio with the existing project logos in its bio area.

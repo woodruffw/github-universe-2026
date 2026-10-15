@@ -294,10 +294,12 @@
 
 == #emoji.heart amō
 
-#block(width: 100%, height: 1fr)[
-  #align(center)[
-    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
-      #rounded-image("assets/cryptography-wheels.png", height: 100%)
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center + horizon)[
+      #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
+        #rounded-image("assets/cryptography-wheels.png", height: 100%)
+      ]
     ]
   ]
 ]
@@ -311,19 +313,21 @@
 
 == power
 
-#block(width: 100%, height: 1fr)[
-  #layout(size => grid(
-    columns: (size.height * 828 / 672, 1fr),
-    rows: (1fr,),
-    column-gutter: 1em,
-    align: center + horizon,
-    [
-      #rounded-image("assets/matrix.png", height: 100%)
-    ],
-    [
-      #stacked-images(("assets/permissions.png", "assets/root.png"))
-    ],
-  ))
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #layout(size => grid(
+      columns: (size.height * 828 / 672, 1fr),
+      rows: (1fr,),
+      column-gutter: 1em,
+      align: center + horizon,
+      [
+        #rounded-image("assets/matrix.png", height: 100%)
+      ],
+      [
+        #stacked-images(("assets/permissions.png", "assets/root.png"))
+      ],
+    ))
+  ]
 ]
 
 #speaker-note[
@@ -415,7 +419,7 @@
   #align(left + top)[
     #set par(leading: 0.3em)
 
-    ```
+    ```zizmor
     $ zizmor example-workflows/artipacked.yml
     error[artipacked]: credential persistence through GitHub Actions artifacts
       --> example-workflows/artipacked.yml:9:9
@@ -508,27 +512,23 @@
 
 == (insecure) platform defaults
 
-#untitled-slide[
-  #align(center + horizon)[
-    #set par(leading: 0.5em)
+#code-slide[
+  // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
+  ```zizmor
+  error[impostor-commit]:
+    commit with no history in referenced repository
 
-    // Full pin (abbreviated below): c7d749a2d57b4b375d1ebcd17cfbfb60c676f18e
-    ```
-    error[impostor-commit]:
-      commit with no history in referenced repository
-
-     --> example-workflows/impostor.yml:8:15
-      |
-    7 |       - name: checkout
-      |         -------------- this step
-    8 |         uses: actions/checkout@c7d749a2… # v7.0.0
-      |               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-      |               uses a commit that doesn't belong
-      |               to the specified org/repo
-      |
-      = note: audit confidence → High
-    ```
-  ]
+   --> example-workflows/impostor.yml:8:15
+    |
+  7 |       - name: checkout
+    |         -------------- this step
+  8 |         uses: actions/checkout@c7d749a2… # v7.0.0
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |               uses a commit that doesn't belong
+    |               to the specified org/repo
+    |
+    = note: audit confidence → High
+  ```
 ]
 
 #speaker-note[
@@ -588,7 +588,7 @@
 == footguns
 
 #code-slide[
-  ```
+  ```zizmor
   error[unsound-condition]: unsound conditional expression
     --> example-workflows/unsound-condition.yml:9:9
      |
@@ -784,7 +784,7 @@
 == YOLO binaries
 
 #code-slide[
-  ```
+  ```zizmor
   help[adhoc-packages]: ad-hoc installation of packages
     --> example-workflows/adhoc-package.yml:11:11
      |
