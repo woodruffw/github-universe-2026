@@ -223,8 +223,9 @@
   - This is Gaius Valerius Catullus. He was a neoteric poet in the late Roman Republic.
   - Catullus is mostly notable if you study Latin, or if you like lascivious poetry, or both.
   - Catullus lived and died without ever having to debug or secure a GitHub Actions workflow.
-  - Despite that, Catullus understood on a deep level what it was like to use GitHub Actions.
+  - But despite that, Catullus understood on a deep level what it was like to use GitHub Actions.
   - We know this because of the 85th poem in his canon, shown here.
+  - Like Catullus, I love and hate GitHub Actions.
 ]
 
 = #emoji.heart amō
