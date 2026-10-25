@@ -1,0 +1,21 @@
+%YAML 1.2
+---
+name: Git output
+file_extensions: [git-output]
+scope: source.git-output
+
+# Presentation highlighting for the hypothetical secure-by-default push output.
+contexts:
+  main:
+    - match: '^[ \t]*! \[rejected\]|^error:'
+      scope: gitoutput.error
+    - match: 'impostor commit|unsound `if` condition'
+      scope: gitoutput.error
+    - match: 'failed to push some refs'
+      scope: gitoutput.bold
+    - match: 'Fix these problems'
+      scope: gitoutput.action
+    - match: '^hint:'
+      scope: gitoutput.hint
+    - match: '(?:git@)?github\.com:[\w./-]+|\.github/workflows/[\w./-]+:\d+'
+      scope: gitoutput.path

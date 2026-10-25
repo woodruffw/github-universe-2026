@@ -264,11 +264,13 @@
     config-methods(init: (self: none, body) => {
       set text(font: "Mona Sans", size: 21.99pt, weight: "regular", fill: black)
       set par(leading: 0.22em)
-      set raw(theme: "universe-code.tmTheme", syntaxes: "zizmor.sublime-syntax")
+      set raw(theme: "universe-code.tmTheme", syntaxes: (
+        "zizmor.sublime-syntax", "git-output.sublime-syntax",
+      ))
       // Keep operators literal: the release's code ligatures collapse == to =.
       show raw: set text(font: "Mona Sans Mono", ligatures: false, features: (calt: 0))
-      show raw.where(lang: "zizmor"): it => {
-        // Touying colors strong text green; ANSI bold keeps the default ink.
+      show raw.where(lang: "zizmor").or(raw.where(lang: "git-output")): it => {
+        // Keep bold output in its token color instead of Touying's alert green.
         show strong: body => text(weight: "bold", body.body)
         it
       }

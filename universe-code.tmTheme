@@ -45,6 +45,25 @@
       <key>foreground</key><string>#007A85</string>
       <key>fontStyle</key><string>bold</string>
     </dict></dict>
+    <!-- Custom emphasis for the secure-by-default Git push example. -->
+    <dict><key>scope</key><string>gitoutput.error</string><key>settings</key><dict>
+      <key>foreground</key><string>#CF222E</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
+    <dict><key>scope</key><string>gitoutput.bold</string><key>settings</key><dict>
+      <key>foreground</key><string>#000000</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
+    <dict><key>scope</key><string>gitoutput.path</string><key>settings</key><dict>
+      <key>foreground</key><string>#0969DA</string>
+    </dict></dict>
+    <dict><key>scope</key><string>gitoutput.hint</string><key>settings</key><dict>
+      <key>foreground</key><string>#515E68</string>
+    </dict></dict>
+    <dict><key>scope</key><string>gitoutput.action</string><key>settings</key><dict>
+      <key>foreground</key><string>#08872A</string>
+      <key>fontStyle</key><string>bold</string>
+    </dict></dict>
   </array>
 </dict>
 </plist>

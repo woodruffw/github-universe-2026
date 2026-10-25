@@ -1074,7 +1074,7 @@
     #block[
       #set par(leading: 0.55em)
 
-      ```
+      ```git-output
       To github.com:username/repo.git
        ! [rejected]        main -> main
       error: failed to push some refs to 'git@github.com:username/repo.git'

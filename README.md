@@ -19,6 +19,8 @@ Diagnostic blocks tagged `zizmor` use `zizmor.sublime-syntax` to reproduce
 zizmor's ANSI emphasis: red errors, blue gutters and secondary annotations,
 cyan help, and bold titles and note labels. The diagnostic palette is adapted
 for the light background. Source excerpts remain plain, as in the CLI output.
+The `git-output` style adds custom emphasis to the hypothetical push rejection:
+red failures, blue paths, muted hint labels, and a green corrective action.
 Image slides use the template's Title and Image frame; text slides use Title
 and Content. The title card includes the speaker portrait, and the introduction
 uses Speaker bio with the existing project logos in its bio area.
