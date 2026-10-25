@@ -744,7 +744,7 @@
 #speaker-note[
   - I think it's worth asking ourselves: why does this happen?
   - There are a few reasons, but three big ones stand out to me.
-  - First, we've promulgated the idea that there's something fundamentally _wrong_ with not using the latest version of every thing we use, ever. I don't think this has panned out well for open source; we've seen attackers take advantage of this trend to launch massive and effective supply chain attacks.
+  - First, we've promulgated the idea that there's something fundamentally _wrong_ with not using the latest version of every thing we use, ever. I don't think this has panned out well for open source; we've seen attackers take advantage of this trend to launch large-scale and effective supply chain attacks.
   - Second, the packaging ergonomics themselves encourage it: almost every packaging ecosystem makes it easier to install the floating "latest" version of a package rather than some specific version.
   - Finally, the lack of alternative ergonomics on the Actions side _reinforce_ it, or at least did for a very long time.
   - The latter has improved significantly in recent years with tools like Dependabot and Renovate, but GitHub Actions itself still doesn't behave like a normal packaging ecosystem in a lot of important ways, including update ergonomics!
@@ -779,6 +779,45 @@
   - However, there are a few things that GitHub _could_ do to nudge their ecosystem away from this practice.
   - For example, GitHub could continue to make the practice of updating actions more ergonomic. If it's easier to update actions themselves, then actions can be more aggressive about interior pinning.
   - That's part of a larger observation, which is that GitHub Actions should behave more like the packaging ecosystem it functions as. Andrew Nesbitt has a great blog post from last December showing just how stark the feature divide between Actions and other packaging ecosystems is.
+]
+
+== YOLO binaries
+
+#untitled-slide[
+  #block(width: 100%, height: 1fr)[
+    #layout(size => {
+      // Remove the Release chip; keep the date and complete headline.
+      let crop-top = 136
+      let banner-ratio = (520 - crop-top) / 1750
+      let table-ratio = measure(image("assets/nesbitt2-upd.png", width: 1pt)).height / 1pt
+      let width = calc.min(size.width, (size.height - 16pt) / (banner-ratio + table-ratio))
+      align(center + horizon, grid(
+        columns: (width,),
+        row-gutter: 16pt,
+        box(width: width, height: width * banner-ratio)[
+          #place(left + horizon, dx: -76pt, text(size: 44pt)[✨])
+          #place(right + horizon, dx: 76pt, text(size: 44pt)[✨])
+          #box(width: width, height: width * banner-ratio, radius: 6pt, clip: true)[
+            #place(top + left, dy: -width * crop-top / 1750, image(
+              "assets/gh-lockfile-blog.png",
+              width: width,
+              height: width * 520 / 1750,
+            ))
+          ]
+        ],
+        rounded-image("assets/nesbitt2-upd.png", width: width),
+      ))
+    })
+  ]
+]
+
+#speaker-note[
+  - Actually, I need to give an update there: GitHub has recently announced support for workflow lockfiles!
+  - These are a massive step in the right direction. But there's a _lot_ more that needs doing here.
+  - In particular, the current public preview for lockfiles only supports non-reusable workflows.
+  - If you use reusable workflows or are an action developer yourself, you still need to perform
+    your own hash-pinning.
+  - I'm hopeful that lockfiles will be a systematic solution and will close those gaps when they go GA.
 ]
 
 == YOLO binaries
