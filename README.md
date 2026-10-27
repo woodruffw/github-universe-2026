@@ -26,6 +26,8 @@ and Content. The title card includes the speaker portrait, and the introduction
 uses Speaker bio with the existing project logos in its bio area.
 Mixed image/code slides use Developer Code Right. The closing
 slide uses the template's original background and thank-you text with the zizmor rainbow.
+The preceding session-feedback slide reproduces template slide 131 using a 4K
+native render, including its original QR code and typography.
 Untitled slides share the light Blank layout's content insets. Stacked images
 fit at a common width while preserving their aspect ratios and a consistent gap.
 

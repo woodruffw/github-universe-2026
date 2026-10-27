@@ -1114,6 +1114,28 @@
 //
 // zizmor should not exist!
 
+// Survey slide 131 from the supplied template, preserved as a 4K native render.
+#slide(
+  config: utils.merge-dicts(
+    config-page(
+      header: none,
+      footer: none,
+      margin: 0pt,
+      fill: white,
+      background: none,
+    ),
+    config-common(subslide-preamble: none),
+  ),
+)[
+  #place(top + left, image(
+    "assets/universe-template/session-feedback.png",
+    width: universe.width,
+    height: universe.height,
+    fit: "stretch",
+    alt: "How was this session? We do actually read these. It’s how Universe gets better every year. Scan to review. The original session feedback QR code appears on the left.",
+  ))
+]
+
 #slide(
   config: utils.merge-dicts(
     config-page(
