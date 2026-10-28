@@ -1080,23 +1080,34 @@
       [#rounded-image("assets/astral-bot.png", width: 100%)],
     )
   ]
+  // Advance the notes while keeping the slide's images unchanged.
+  #pause
 ]
 
-#speaker-note[
+#speaker-note(subslide: 1)[
   - One of the things I love about open source is that it proves that there's no such thing as a tragedy of the commons.
-  - We benefit immensely from having as many people engage in open source as possible. But that doesn't mean people can't behave poorly in it, i.e. engage in its spoliation.
+  - We benefit immensely from having as many people engage in open source as possible.
+  - But that doesn't mean people can't behave poorly in it, meaning engage in its spoliation.
   - So far, GitHub has mostly socialized the problem of LLM spam back onto maintainers, leaving them to sift through the noise.
-  - The end result is a patchwork of different projects trying to maintain their sanity. I don't think that's sustainable long-term.
+  - The end result is a patchwork of different projects trying to maintain their sanity.
+  - I don't think that's sustainable long-term.
+]
+
+#speaker-note(subslide: 2)[
   - Instead, I'd like to see GitHub invest in better moderation primitives, up to and including having a more official stance on improving the quality of work in the agentic era.
-  - I don't think it's at all clear yet what that would look like, but it seems possible to me that reputation and/or vouching systems could help here.
-  - On the other hand, such approaches run a real risk of starving the open source world of its talent pipeline. We were all obnoxious noobs at some point. Or at least I was.
+  - I don't think it's at all clear yet what that would look like.
+  - It seems possible to me that reputation and/or vouching systems could help here.
+  - Many projects are playing with this approach in some form or another.
+  - On the other hand, such approaches run a real risk of starving the open source world of its talent pipeline.
+  - We were all obnoxious noobs at some point.
+  - Or at least I was.
 ]
 
 = "actions v2"
 
 #speaker-note[
   - Okay, that was quite an airing of grievances. We're almost at the end.
-  - The point of this talk was to ask what a "v2" of GitHub Actions could look like, at least from a maintainer's perspective.
+  - The point of this talk was to ask what a "v2" of GitHub Actions could look like, from a maintainer's perspective.
 ]
 
 == zizmor should not exist!
@@ -1112,10 +1123,11 @@
 ]
 
 #speaker-note[
-  - Here's an important thing I want to impart, in case I haven't: zizmor should not exist!
-  - Throughout this talk, I've yammered about _secure defaults_. Tools, especially third-party tools, are not secure defaults.
-  - They are stopgaps. Important and even necessary stopgaps, but stopgaps nonetheless.
-  - Nothing would make me happier than for it to become a relic of the past, in the same way that we increasingly talk about memory safety as a property of languages and systems rather than something approximated through sanitizers and fuzzing.
+  - Here's an important thing I want to impart, in case I have failed to: zizmor should not exist!
+  - Throughout this talk, I've yammered about _secure defaults_.
+  - Tools, especially third-party tools, are fundamentally not secure defaults.
+  - Security tools are stopgaps. Important and even necessary stopgaps, but stopgaps nonetheless.
+  - Nothing would make me happier than for zizmor to become a relic of the past, in the same way that we increasingly talk about memory safety as a property of languages and systems rather than something approximated through sanitizers and fuzzing.
 ]
 
 == security by default
@@ -1143,11 +1155,15 @@
 ]
 
 #speaker-note[
-  - Instead of tools like zizmor, a "v2" of GitHub Actions should be secure by default.
-  - Per our three domains, that means three things.
-  - First, a v2 should not have many, or even any, of the specific footguns we covered. And these are just a tiny subset.
-  - Second, a v2 should help _induce_ the community away from secure packages by treating Actions more like the package ecosystem it is. Package management should not be an afterthought for GitHub Actions, it's one of the things that makes it so amazing!
-  - And finally, a v2 should grapple with the hard problem of our new normal in the open source commons, so that maintainers do not get fed up and vote for insecurity with their feet.
+  - Instead of tools like zizmor, a "v2" of GitHub Actions should be *secure by default*.
+  - Revisiting our three domains, that means three things.
+  - First, a v2 should not have many, or even any, of the specific footguns we covered.
+  - Keep in mind we've only talked about a tiny subset.
+  - Second, a v2 should help _induce_ the community away from insecure practices.
+  - It could do this by treating Actions more like the package ecosystem it is.
+  - Package management should not be an afterthought for GitHub Actions, it's one of the things that makes it so amazing!
+  - Finally, a v2 should grapple with the hard problem of our new normal in the open source commons.
+  - It is critical maintainers do not get fed up and vote for insecurity with their feet.
 ]
 
 // github is doing a lot better, but there are still significant headwinds that must be overcome
@@ -1188,7 +1204,7 @@
 
 #speaker-note[
   - And with that, I'm done. I hope you enjoyed the session and found it thought provoking.
-  - I'm happy to talk more, please come find me afterwards!
+  - I'm happy to talk more, please come find me afterwards.
 ]
 
 #slide(
