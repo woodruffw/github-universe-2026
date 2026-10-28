@@ -700,8 +700,10 @@
   - Okay, I think I've ragged on GitHub themselves enough, at least for now.
   - Let's talk about some ways in which the Actions community has also encouraged and even ossified insecure-by-default practices.
   - The distinction here is arguably more subtle than I can fairly relate in just one talk.
-  - I think it could fairly be argued that GitHub shares some responsibility here, given that programmers tend to do easy things and being insecure is easier than being secure on GitHub Actions.
-  - But it also takes two to tango, and many common third-party patterns within the Actions ecosystem warrant scrutiny.
+  - I think it could fairly be argued that GitHub shares some responsibility here.
+  - After all, programmers tend to do easy things, and being insecure is currently easier than being secure on GitHub Actions.
+  - However, takes two to tango.
+  - And many common third-party patterns within the Actions ecosystem warrant separate scrutiny.
 ]
 
 == YOLO binaries
@@ -746,10 +748,13 @@
 
 #speaker-note[
   - One of the most common patterns I see in GitHub Actions is what I call the "YOLO binary" pattern.
-  - This is where, even _if_ you do everything as a user, like hash-pinning the action itself, the action still exhibits interior mutability. That mutability effectively defeats much of the value of a hash-pin.
-  - One of the most common ways this happens is by providing an action input that sets the tool's version, but then defaulting to "latest" when none is given.
-  - "Latest" then gets pulled from the latest GitHub release or whatever, with no real hash-pinning since the action can't possibly know the hashes for newer binaries _a priori_.
-  - The concerning thing about this pattern is that it's largely invisible and even taken for granted, unless you ready every single line of code for every action you depend on: it can happen deep inside the action's own rats' nest of shell scripts, Dockerfiles, or JavaScript.
+  - This is where, even _if_ you do everything right as a user, like hash-pinning, the action still exhibits interior mutability.
+  - That mutability then effectively defeats much of the value of a hash-pin.
+  - One of the most common sources of this is an action that installs a tool, but defaults to "latest" when no version is explicitly provided.
+  - "Latest" then gets pulled from the latest GitHub release or whatever.
+  - And it has no real hash-pinning since the action can't possibly know the hashes for newer binaries _a priori_.
+  - The concerning thing about this pattern is that it's largely invisible and even taken for granted.
+  - It can happen deep inside the action's own rats' nest of shell scripts, Dockerfiles, or JavaScript.
 ]
 
 == YOLO binaries
@@ -776,10 +781,12 @@
 #speaker-note[
   - I think it's worth asking ourselves: why does this happen?
   - There are a few reasons, but three big ones stand out to me.
-  - First, we've promulgated the idea that there's something fundamentally _wrong_ with not using the latest version of every thing we use, ever. I don't think this has panned out well for open source; we've seen attackers take advantage of this trend to launch large-scale and effective supply chain attacks.
-  - Second, the packaging ergonomics themselves encourage it: almost every packaging ecosystem makes it easier to install the floating "latest" version of a package rather than some specific version.
+  - First, we've promulgated the notion that there's something fundamentally _wrong_ with not using the latest version of every thing we use, ever.
+  - I don't think this has panned out well for open source; we've seen attackers take advantage of this trend to launch large-scale and effective supply chain attacks.
+  - Second, the packaging ergonomics themselves encourage it.
+  - Many packaging ecosystems make it easier to install the floating "latest" version of a package rather than some specific version.
   - Finally, the lack of alternative ergonomics on the Actions side _reinforce_ it, or at least did for a very long time.
-  - The latter has improved significantly in recent years with tools like Dependabot and Renovate, but GitHub Actions itself still doesn't behave like a normal packaging ecosystem in a lot of important ways, including update ergonomics!
+  - The latter has improved significantly in recent years with tools like Dependabot and Renovate, but GitHub Actions itself still doesn't behave like a normal packaging ecosystem in a lot of important ways.
 ]
 
 == YOLO binaries
@@ -807,10 +814,13 @@
 
 #speaker-note[
   - At the end of the day, GitHub can never fully prevent a third-party action from exhibiting interior mutability.
-  - It's all arbitrary code, after all. And like all open source you fundamentally need to trust it.
+  - It's all arbitrary code, after all.
+  - And like all open source you fundamentally need to trust it.
   - However, there are a few things that GitHub _could_ do to nudge their ecosystem away from this practice.
-  - For example, GitHub could continue to make the practice of updating actions more ergonomic. If it's easier to update actions themselves, then actions can be more aggressive about interior pinning.
-  - That's part of a larger observation, which is that GitHub Actions should behave more like the packaging ecosystem it functions as. Andrew Nesbitt has a great blog post from last December showing just how stark the feature divide between Actions and other packaging ecosystems is.
+  - For example, GitHub could continue to make the practice of updating actions more ergonomic.
+  - If it's easier to update actions themselves, then actions can be more aggressive about interior pinning.
+  - That's part of a larger observation, which is that GitHub Actions should behave more like the packaging ecosystem it functions as.
+  - Andrew Nesbitt has a great blog post from last December showing just how stark the feature divide between Actions and other packaging ecosystems is.
 ]
 
 == YOLO binaries
@@ -845,7 +855,8 @@
 
 #speaker-note[
   - Actually, I need to give an update there: GitHub has recently announced support for workflow lockfiles!
-  - These are a massive step in the right direction. But there's a _lot_ more that needs doing here.
+  - These are a massive step in the right direction.
+  - But there's a _lot_ more that needs doing here.
   - In particular, the current public preview for lockfiles only supports non-reusable workflows.
   - If you use reusable workflows or are an action developer yourself, you still need to perform
     your own hash-pinning.
@@ -869,8 +880,9 @@
 ]
 
 #speaker-note[
-  - It would of course be remiss of me not to mention that zizmor will flag many of these YOLO binary patterns.
-  - zizmor will also flag similar patterns on the workflow side, for example when you've used `npm install` or `pip install` to install a tool in an ad-hoc manner rather than putting it in a proper lockfile.
+  - It would be remiss of me to not mention that zizmor will flag many of these YOLO binary patterns.
+  - zizmor will _also_ flag similar patterns on the workflow side, as shown here.
+  - For example, zizmor will flag when you've used `npm install` or `pip install` to install a tool in an ad-hoc manner rather than putting it in a proper lockfile.
 ]
 
 == javascript actions
@@ -892,10 +904,12 @@
 
 #speaker-note[
   - Now for a slightly spicier one.
-  - If you've ever developed an action, you know that they come in approximately three forms: there are Docker actions, composite actions, and JavaScript actions.
+  - If you've ever developed an action, you know that they come in approximately three forms.
+  - There are Docker actions, composite actions, and JavaScript actions.
   - All three forms share a common base, which is that they are defined within a GitHub repository or a directory thereof and use an `action.yml` file to declare metadata and their entrypoint.
-  - However, JavaScript-based actions are...special.
-  - A huge reason to use a language like JavaScript is that it grants you access to its packaging ecosystem. But GitHub Actions doesn't have a "bundle" concept, so how are all of those dependencies supposed to get onto the runner?
+  - However, JavaScript-based actions are a bit special.
+  - A huge reason to use a language like JavaScript is that it grants you access to its packaging ecosystem.
+  - But GitHub Actions doesn't have a "bundle" concept, so how are all of those dependencies supposed to get onto the runner?
 ]
 
 == javascript actions
@@ -907,11 +921,14 @@
 ]
 
 #speaker-note[
-  - The answer, of course, is just to check them directly into the repo. So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
+  - The answer, of course, is just to commit them directly into the repo.
+  - So just about every JavaScript-based action has a `dist/` directory containing an ungodly amount of minified JavaScript.
   - I think this is really bad on several levels.
-  - For one, it's almost completely unauditable. In many cases, we have to just sort of hope that the bundled version of the action is the same as the readable version, despite both being checked into the repo.
-  - For another, it treats the Git repository itself as the packaging and distribution substrate, despite GitHub having a separate and very mature platform for creating releases from tags.
-  - This in turn means that important security features on the release side (like immutable releases and environment protections) don't inherently apply to actions; users need to do more work to do the secure thing.
+  - For one, it's not very auditable.
+  - We have to hope that the bundled version of the action is the same as the readable version.
+  - For another, it treats the Git repository itself as the packaging and distribution substrate, despite GitHub having a separate and very mature platform for creating releases and their assets from tags.
+  - This in turn means that important security features on the release side (like immutable releases and environment protections) don't inherently apply to actions.
+  - In other words, users need to do more work to do the secure thing. It's not the default for them.
 ]
 
 == community practices
@@ -930,11 +947,11 @@
   - What could GitHub do to improve these community practices?
   - As I mentioned before, GitHub fundamentally can't stop people from doing whatever they want. After all, CI/CD is fundamentally arbitrary code execution.
   - As such we can't expect them to work miracles.
-  - But what GitHub _could_ do is continue to invest in Actions not just as a platform, but as a packaging ecosystem.
-  - My intuition is making the packaging experience smoother in Actions can and will nudge users away from doing risky and opaque things.
-  - For YOLO packages, that probably means making action upgrades even more of a first-class exprience, rather than something that's layered on top of a repository via Dependabot.
+  - But what GitHub _could_ do is continue to invest in Actions as a full-fledged packaging ecosystem.
+  - My intuition is that making the packaging experience smoother in Actions _can and will_ nudge users away from doing risky and opaque things.
+  - For YOLO packages, that probably means making action upgrades even more of a first-class exprience.
   - For JavaScript actions, I think it means fundamentally re-evaluating how actions are distributed.
-  - Webassembly has made huge strides as a runtime in recernt years, and I wonder if WASM could help with both distribution and security isolation.
+  - WebAssembly has made huge strides as a runtime in recent years, and I wonder if it could help with both distribution and security isolation.
 ]
 
 = reliability and availability
@@ -958,9 +975,11 @@
 #speaker-note[
   - I suspect that everybody in this room is familiar with GitHub's recent reliability and availability issues.
   - Recent outages have affected almost every part of GitHub, including Actions.
-  - I've also seen a lot of schadenfreude online around this, most of which comes from people who treat it as confirmation for preheld beliefs around agentic engineering, Azure, or whatever else.
-  - I personally suspect this is wrong, or at least more wrong than right: the more parsimonious explanation is that GitHub is a victim of its own success.
-  - In short: way more people (and their agents) are using the service than ever before, and GitHub is clearly struggling to adapt past assumptions around scale and growth to this new reality.
+  - I've also seen a lot of schadenfreude online around this.
+  - Much of it seems to come from people who treat it as confirmation for preheld beliefs around agentic engineering, Azure, or whatever else.
+  - I personally suspect this is wrong, or at least more wrong than right.
+  - To me, the more parsimonious explanation is that GitHub is a victim of its own success.
+  - In short: way more people and their agents are using the service than ever before, and GitHub is clearly struggling to adapt past assumptions around scale and growth to this new reality.
 ]
 
 == reliability and availability...as security?
@@ -981,7 +1000,7 @@
 ]
 
 #speaker-note[
-  - Many people have talked about GitHub's reliability and availability problems from the perspective of being a frustrated user, paying customer, etc.
+  - Many people have talked about GitHub's reliability and availability problems from the perspective of being a frustrated user, or a paying customer, or similar.
   - But I think we should consider two security framings as well.
   - I think of these as accidentally inducing maintainers into "shifting right" again and "spoliation of the commons," respectively.
 ]
@@ -1011,8 +1030,8 @@
 ]
 
 #speaker-note[
-  - So, now we have the converse.
-  - I think we should be concerned that an unreliable GitHub (and unreliable actions in particular) will cause maintainers to "shift right" again.
+  - However, with an unrelible GitHub, we have the converse.
+  - I think we should be concerned that an unreliable GitHub (and especially GitHub Actions) will cause maintainers to "shift right" again.
   - They can't be blamed for it either: you can only have your critical release pipelines fail so many times before you rage quit and go back to storing all of your publishing credentials on your devbox.
   - Similarly, you can only endure so many `git push` outages before you start to seriously think about self-hosting your own forge.
   - There's nothing inherently wrong with this. Developer machines can be secure, as can self-hosting.
@@ -1034,9 +1053,9 @@
 
 #speaker-note[
   - There's another angle to consider as well.
-  - It seems very unlikely that demand for GitHub and GitHub Actions will go down, or even plateau. All signs point to demand continuing to increase.
-  - Everybody in this room knows why that is: an absolutely bananas amount of vibe coding.
-  - I am not opposed to LLMs. That would be very hypocritical to me.
+  - It seems very unlikely that demand for GitHub and GitHub Actions will plateu, much less decrease.
+  - Everybody in this room knows why that is: vibing, agentic engineering, etc.
+  - I am not opposed to LLMs. That would be very hypocritical of me!
   - But I _am_ concerned that GitHub is not doing enough to prevent LLM usage, including _well-intentioned_ usage, from spoiling the commons for the larger Open Source community.
   - This spoilation takes two forms.
   - First, there's the problem of resource consumption more generally, mentioned before. I see no easy way out of this: it's clearly unacceptable to police what makes for "good" open source; GitHub just needs to scale to meet the demand.
@@ -1064,7 +1083,7 @@
 ]
 
 #speaker-note[
-  - One of the things I love about open source is that it shows that there's no such thing as a "tragedy" of the commons.
+  - One of the things I love about open source is that it proves that there's no such thing as a tragedy of the commons.
   - We benefit immensely from having as many people engage in open source as possible. But that doesn't mean people can't behave poorly in it, i.e. engage in its spoliation.
   - So far, GitHub has mostly socialized the problem of LLM spam back onto maintainers, leaving them to sift through the noise.
   - The end result is a patchwork of different projects trying to maintain their sanity. I don't think that's sustainable long-term.
