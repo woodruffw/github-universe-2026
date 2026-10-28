@@ -163,7 +163,20 @@
 
 #text-slide[
   #block(width: 100%, height: 1fr)[
-    #image("assets/zizmor-cli-1.png", width: 100%, height: 100%, fit: "contain")
+    #align(center + horizon)[
+      // Remove the screenshot's outer padding; retain the full terminal window.
+      #layout(size => {
+        let height = calc.min(size.height, size.width * 750 / 1834)
+        let width = height * 1834 / 750
+        box(width: width, height: height, radius: height * 36 / 750, clip: true)[
+          #place(top + left, dx: -width * 112 / 1834, dy: -height * 76 / 750, image(
+            "assets/zizmor-cli-1.png",
+            width: width * 2058 / 1834,
+            height: height * 974 / 750,
+          ))
+        ]
+      })
+    ]
   ]
 ]
 
@@ -271,9 +284,18 @@
 
 #code-right-slide(
   [
-    #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
-      #rounded-image("assets/tp-enroll.png", height: 100%)
-    ]
+    // Focus on the required fields, omitting the optional environment and blank right side.
+    #layout(size => {
+      let height = calc.min(size.height - 2pt, (size.width - 2pt) * 1040 / 930)
+      let width = height * 930 / 1040
+      box(width: width, height: height, radius: 7pt, stroke: 1pt + universe.line, clip: true)[
+        #place(top + left, dx: -width * 16 / 930, dy: -height * 16 / 1040, image(
+          "assets/tp-enroll.png",
+          width: width * 1486 / 930,
+          height: height * 1646 / 1040,
+        ))
+      ]
+    })
   ],
   [
     ```yaml
@@ -305,9 +327,18 @@
 #text-slide[
   #block(width: 100%, height: 1fr)[
     #align(center + horizon)[
-      #box(height: 100%, fill: universe.line, radius: 7pt, inset: 1pt)[
-        #rounded-image("assets/cryptography-wheels.png", height: 100%)
-      ]
+      // Keep the header and six platform rows; crop the older glibc entries below.
+      #layout(size => {
+        let height = calc.min(size.height - 2pt, (size.width - 2pt) * 1000 / 2284)
+        let width = height * 2284 / 1000
+        box(width: width, height: height, radius: 7pt, stroke: 1pt + universe.line, clip: true)[
+          #place(top + left, image(
+            "assets/cryptography-wheels.png",
+            width: width,
+            height: height * 1462 / 1000,
+          ))
+        ]
+      })
     ]
   ]
 ]
@@ -371,11 +402,11 @@
 
 #text-slide[
   #block(width: 100%)[
-    #set text(size: 21.99pt, top-edge: "ascender")
-    #set list(spacing: 10pt)
+    #set text(size: 34pt, top-edge: "ascender")
+    #set list(spacing: 24pt)
     #show list: it => {
-      show list: set text(size: 17.99pt, fill: universe.muted)
-      show list: set block(above: 5pt, below: 0pt)
+      show list: set text(size: 26pt, fill: universe.muted)
+      show list: set block(above: 10pt, below: 0pt)
       it
     }
 
@@ -437,7 +468,8 @@
 
 #code-slide[
   #align(left + top)[
-    #set par(leading: 0.3em)
+    // Tighter line spacing lets this diagnostic render at a larger font size.
+    #show raw.where(block: true): set par(leading: 0.3em)
 
     ```zizmor
     $ zizmor example-workflows/artipacked.yml
@@ -561,11 +593,15 @@
 
 == (insecure) platform defaults
 
-// Balance the image group between the heading and footer in both reveal states.
-#let image-offset = -18pt
-#move(dy: image-offset, rounded-image("assets/impostor-banner.png", width: 100%))
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center + horizon)[
+      #rounded-image("assets/impostor-banner.png", width: 100%)
+    ]
+  ]
+]
 
-#speaker-note(subslide: 1)[
+#speaker-note[
   - GitHub is aware of this.
   - It's an intentional design and performance tradeoff in their Git hosting model.
   - It's even something their web UI will warn you about, if you navigate to the commit directly.
@@ -574,15 +610,17 @@
   - So, what could GitHub do better here, in terms of secure defaults?
 ]
 
-#pause
+== (insecure) platform defaults
 
-#block(width: 100%, height: 1fr, above: 0.3em)[
-  #align(center + horizon)[
-    #move(dy: image-offset, rounded-image("assets/sha-policy.png", height: 100%))
+#text-slide[
+  #block(width: 100%, height: 1fr)[
+    #align(center + horizon)[
+      #rounded-image("assets/sha-policy.png", height: 100%)
+    ]
   ]
 ]
 
-#speaker-note(subslide: 2)[
+#speaker-note[
   - Well, I think the answer is kind of self-evident: this just shouldn't work at all!
   - GitHub should simply refuse to run workflows that contain impostor commits.
   - That includes transitive uses through composite actions.
@@ -731,12 +769,13 @@
       ```
     ],
     example([what the action runs])[
+      #show raw.where(block: true): set text(size: 30pt)
+      #show raw.where(block: true): set par(leading: 0.2em)
       ```yaml
       inputs:
         version:
           required: false
           default: "latest"
-
       # ...
       runs:
         steps:
@@ -985,17 +1024,14 @@
 == reliability and availability...as security?
 
 #text-slide[
-  #block(width: 100%)[
-    #set text(size: 21.99pt, top-edge: "ascender")
-    #set list(spacing: 10pt)
-    #show list: it => {
-      show list: set text(size: 17.99pt, fill: universe.muted)
-      show list: set block(above: 5pt, below: 0pt)
-      it
-    }
+  #block(width: 100%, height: 1fr)[
+    #align(left + horizon)[
+      #set text(size: 40pt, top-edge: "ascender")
+      #set list(spacing: 30pt)
 
-    - oops, the maintainers are shifting right again
-    - spoliation of the commons
+      - oops, the maintainers are shifting right again
+      - spoliation of the commons
+    ]
   ]
 ]
 
@@ -1066,25 +1102,13 @@
 
 #untitled-slide[
   #block(width: 100%, height: 1fr)[
-    #grid(
-      // Proportional columns give the bottom screenshots the same height.
-      columns: (1790 / 484 * 1fr, 1792 / 514 * 1fr),
-      rows: (1fr, auto),
-      column-gutter: 16pt,
-      row-gutter: 16pt,
-      align: center + horizon,
-      grid.cell(colspan: 2)[
-        #rounded-image("assets/nudnik.png", height: 100%)
-      ],
-      [#rounded-image("assets/vouch.png", width: 100%)],
-      [#rounded-image("assets/astral-bot.png", width: 100%)],
-    )
+    #align(center + horizon)[
+      #rounded-image("assets/nudnik.png", width: 100%)
+    ]
   ]
-  // Advance the notes while keeping the slide's images unchanged.
-  #pause
 ]
 
-#speaker-note(subslide: 1)[
+#speaker-note[
   - One of the things I love about open source is that it proves that there's no such thing as a tragedy of the commons.
   - We benefit immensely from having as many people engage in open source as possible.
   - But that doesn't mean people can't behave poorly in it, meaning engage in its spoliation.
@@ -1093,7 +1117,15 @@
   - I don't think that's sustainable long-term.
 ]
 
-#speaker-note(subslide: 2)[
+== de-spoiling the commons
+
+#untitled-slide[
+  #block(width: 100%, height: 1fr)[
+    #stacked-images(("assets/vouch.png", "assets/astral-bot.png"))
+  ]
+]
+
+#speaker-note[
   - Instead, I'd like to see GitHub invest in better moderation primitives, up to and including having a more official stance on improving the quality of work in the agentic era.
   - I don't think it's at all clear yet what that would look like.
   - It seems possible to me that reputation and/or vouching systems could help here.
