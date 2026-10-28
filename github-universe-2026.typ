@@ -152,7 +152,8 @@
 
 #speaker-note[
   - That's me on the left.
-  - Just a little bit about me. I'm a Member of Technical Staff at OpenAI, where I work on the Astral team. Specifically, I mostly work on uv, which some of you probably use.
+  - Just a little bit about me. I'm a Member of Technical Staff at OpenAI, where I work on the Astral team.
+  - Specifically, I mostly work on uv, which some of you probably use.
   - Outside of work, I've been involved in open source for over a decade.
   - Among other things, I'm one of Homebrew's maintainers, as well as one of the maintainers of PyPI.
   - However, this talk and its contents reflect my own thoughts and opinions. It doesn't necessarily reflect the opinions of my employer or any of the projects I help maintain.
@@ -170,9 +171,10 @@
   - Actually, I kind of buried the lede a bit.
   - I'm also the creator and maintainer of zizmor.
   - If you don't know zizmor, it's a static analysis tool for CI/CD, including GitHub Actions.
-  - It finds many of the most well known (and some not-so-well-known) security footguns in GitHub Actions, and can report them using diagnostics like the kind shown here.
-  - It also supports SARIF, so you can integrate it directly into GitHub's Advanced Security or any other tool that can consume SARIF.
-  - Thanks to my open source work and zizmor in particular, I have a lot of opinions about GitHub Actions. By the end of this talk, I hope you'll have a lot more opinions as well.
+  - It finds many well known (and some not-so-well-known) security footguns in GitHub Actions, and can report them using diagnostics like the kind shown here.
+  - It also supports SARIF, so you can integrate it directly into GitHub's Advanced Security or any other SARIF consumer.
+  - Thanks to my open source work in general and zizmor in particular, I have a lot of opinions about GitHub Actions.
+  - By the end of this talk, I hope you'll have a lot more opinions as well.
 ]
 
 == GitHub Actions circa 54 BCE
@@ -220,12 +222,13 @@
 ]
 
 #speaker-note[
-  - This is Gaius Valerius Catullus. He was a neoteric poet in the late Roman Republic.
+  - This is Gaius Valerius Catullus.
+  - He was a neoteric poet in the late Roman Republic.
   - Catullus is mostly notable if you study Latin, or if you like lascivious poetry, or both.
-  - Catullus lived and died without ever having to debug or secure a GitHub Actions workflow.
+  - Catullus lived and died without ever having to debug, much less secure, a GitHub Actions workflow.
   - But despite that, Catullus understood on a deep level what it was like to use GitHub Actions.
   - We know this because of the 85th poem in his canon, shown here.
-  - Like Catullus, I love and hate GitHub Actions.
+  - Like Catullus, I love and hate GitHub Actions, and I am tortured by it.
 ]
 
 = #emoji.heart amō
@@ -258,8 +261,10 @@
 
 #speaker-note[
   - First: GitHub Actions is an _amazing_ resource. It's functionallity free and unlimited compute for the world's open source. If I had to pay for what GitHub Actions gives me for free, it eaily would cost me a few thousand dollars a year.
-  - Stategically, GitHub Actions is also a great example of aligned interests: GitHub, Microsoft, etc. benefit from reliable, well-tested open source software, and OSS maintainers don't otherwise have the time and resources to maintain build environments for every platform they might want to target. Both parties win.
-  - Finally, GitHub Actions (and CI/CD more generally) is a great example practical "shifting left": isolated CI/CD runners mean that OSS maintainers can do fewer sensitive things on local machines, and more things on ephemeral, isolated runners where access can be carefully introduced, intermediated, and audited.
+  - Stategically, GitHub Actions is also a great example of aligned interests.
+  - Big companies like Microsoft benefit from reliable and well-tested open source software, while OSS maintainers benefit from access to build and test environments they otherwise wouldn't have the time or resources to manage. Both parties win.
+  - Separately, GitHub Actions is a great practical example of "shifting left".
+  - Isolated CI/CD runners mean that OSS maintainers can do fewer sensitive things on local machines, and more things on ephemeral, isolated runners with carefully controlled and limited access.
 ]
 
 == #emoji.heart amō
@@ -287,10 +292,12 @@
 
 #speaker-note[
   - Real-world examples of these positive qualities abound.
-  - For one, it's incredibly easy to build and test OSS on GitHub Actions, especially for platforms other than the one I use on a daily basis. Tens of thousands of major projects on GitHub ship the full matrix of `{x86, x64, arm64} x {Windows, macOS, Linux}` in their releases because of how straightforward GitHub Actions makes it.
-  - Even this is an under-approximation for ecosystems like Python, where it's common ship many build variants for different libc versions, etc.
-  - For another, GitHub adopted OIDC early, relative to other CI/CD providers. This spurred the development of techniques like Trusted Publishing for "credential-less" authentication.
-  - Trusted Publishing started with PyPI and has now seen widespread adoption in the Ruby, Rust, and JavaScript communities, in no small part thanks to the foundation supplied by GitHub Actions.
+  - For one, it's incredibly easy to build and test OSS on GitHub Actions, especially for platforms other than the ones one uses on a daily basis.
+  - Tens of thousands of major projects on GitHub ship the full matrix of `{x86, x64, arm64} x {Windows, macOS, Linux}` in their releases because of how straightforward GitHub Actions makes it.
+  - Even this is an under-approximation for ecosystems like Python, where it's common to ship many builds for different libc families and versions.
+  - For another, GitHub Actions was an early adopter of OpenID Connect.
+  - This spurred the development of techniques like Trusted Publishing for "credential-less" authentication.
+  - Trusted Publishing began with PyPI and has now seen widespread adoption in the Ruby, Rust, and JavaScript communities, in no small part thanks to the foundation supplied by GitHub Actions.
 ]
 
 == #emoji.heart amō
@@ -307,9 +314,11 @@
 
 #speaker-note[
   - I like this screenshot because it shows just how material these positive qualities are.
-  - This is just a small handful of the wheels, which are binaries, that the `cryptography` package on PyPI publishes from GitHub with every single release. There are 58 of them total on each release currently, so the full list wouldn't fit on this slide.
-  - Every single one of them gets built and tested on GitHub Actions, and published through Trusted Publishing.
-  - Those builds then end up powering cryptography in most of the world's Python codebases. And GitHub Actions is a key enabler of that!
+  - This is just a small handful of the wheels, which are binaries, that the `cryptography` package on PyPI publishes from GitHub with every single release.
+  - There are 58 of them total on each release currently, so the full list wouldn't come close to fitting on this slide.
+  - Every single one of them gets built and tested on GitHub Actions, and published through Trusted Publishing along with a signed attestation.
+  - Those builds then end up powering cryptography in most of the world's Python codebases.
+  - GitHub Actions is a critical enabler for all of that!
 ]
 
 == power
@@ -333,10 +342,12 @@
 
 #speaker-note[
   - So much of what makes GitHub Actions amazing is how _powerful_ it is.
-  - With a little bit of YAML scaffolding, it gives us root access to virtual machines, with root, that have direct access to the public Internet.
-  - Despite being so general as an execution layer, GitHub Actions also exposes a very _specialized_ and rich view into GitHub's own data model: triggers for things like pushes and PRs, API access via a built-in `GITHUB_TOKEN`, deployments and environments, etc.
-  - Finally, GitHub Actions is powerful because it's also an _ecosystem_. If you're like me, you depend on dozens of actions and reusable workflows that are maintained by both GitHub themselves and open source maintainers.
-  - This ecosystem effect goes a long way towards reducing the drudgery problem in CI/CD, where every little thing needs to be built from the ground up.
+  - With just a tiny bit of YAML scaffolding, it gives us root access to virtual machines that have direct access to the public Internet.
+  - Despite being so general as an execution layer, GitHub Actions is also very specialized and semantically rich.
+  - It exposes different triggers for things like pushes and PRs, API access via a built-in `GITHUB_TOKEN`, deployments and environments, and too much else to enumerate.
+  - Finally, GitHub Actions is powerful because it's also an _ecosystem_.
+  - If you're like me, you depend on dozens of actions and reusable workflows that are maintained by both GitHub themselves and open source maintainers.
+  - This ecosystem effect goes a long way towards reducing the drudgery problem on other CI/CD platforms, where every little thing needs to be built from the ground up.
 ]
 
 = #emoji.face.angry ōdī
@@ -346,12 +357,14 @@
 ]
 
 #speaker-note[
-  - GitHub Actions is powerful, but power is also its own kind of weakness.
+  - However, power is also its own kind of weakness.
   - In the case of Actions, that weakness manifests in three main domains that I want to talk about today.
-  - The first two are firmly in the category of security, and are things that I think GitHub can begin to improve, starting today.
-  - The last one is thornier, because it's a social weakness, and requires both GitHub and the larger OSS community to engage in some soul searching about the future of our shared open source endeavor.
-  - However, I include it because I think it's also a security concern.
-  - For each of these, I'll break it down "wishlist" style: I'll talk about the _why_ of the problems that occur, and _how_ I think GitHub could address each problem.
+  - The first two are firmly in the category of security, and are things that I think GitHub can begin to improve, starting whenever.
+  - The last one is thornier, because it's a social weakness.
+  - It requires both GitHub and the larger OSS community to engage in some soul searching about the future of our shared open source endeavor.
+  - However, I include it because I think it's _also_ frameable as a security concern.
+  - For each of these, I'll break it down as a wishlist.
+  - I'll talk about the _why_ of the problems that occur, and _how_ I think GitHub could address each problem.
 ]
 
 == #emoji.face.angry ōdī
@@ -377,18 +390,23 @@
 
 #speaker-note[
   - These are my three domains.
-  - First, we're going to talk about the problem of insecure defaults on GitHub Action, and why so many people end up reaching for tools (like `zizmor`) that can only paper over the problem rather than fixing it systematically.
-  - Then, we'll talk about insecure community practices on GitHub Actions. These will be things that GitHub can't necessarily fix as a platform, but can potentially nudge people away from over time.
+  - First, we're going to talk about the problem of insecure defaults on GitHub Actions.
+  - Namely, why so many people end up reaching for tools like `zizmor` that can only paper over the problem rather than fixing it systematically.
+  - Then, we'll talk about insecure community practices on GitHub Actions.
+  - These will be things that GitHub can't necessarily fix as a platform, but can potentially nudge people away from over time.
   - Finally, we'll talk about the elephant in the room: the perception that Actions is no longer reliable as a service.
-  - A lot of ink has been spilled over this topic already, but I'm going to frame it in terms of security.
+  - A lot of ink has been spilled over this last topic already.
+  - But I'm going to attempt a novel security framing of it.
 ]
 
 = platform defaults and footguns
 
 #speaker-note[
-  - Let's talk about insecure defaults and footguns. GitHub Actions has developed a reputation for having both of these.
+  - Let's talk about insecure defaults and footguns.
+  - GitHub Actions has developed a reputation for having both of these.
   - In the interest of being fair, it's worth noting that GitHub _has_ fixed many of the insecure defaults in Actions in recent months.
-  - Still, there are plenty more to go around. Let's look at a few of them.
+  - Still, there are plenty more to go around.
+  - Let's look at a few of them.
 ]
 
 == (insecure) platform defaults and footguns
@@ -410,7 +428,8 @@
 
 #speaker-note[
   - Let's start on the smaller end of things.
-  - This is a pretty normal looking GitHub Actions workflow. If you're like me, you probably see some take on this several times a week.
+  - This is a pretty normal looking GitHub Actions workflow.
+  - If you're like me, you probably see some take on this several times a week.
   - But it also contains a pretty bad security vulnerability!
 ]
 
@@ -444,11 +463,11 @@
 #speaker-note[
   - If you ran that workflow through zizmor, you'd see something like this.
   - The vulnerability here involves not one, not two, but three insecure defaults at once.
-  - First, older repositories default to a read-write token for GitHub Actions by default. That means that, even if you don't set an explicit write permission, most jobs get a token that can can modify PRs, push contents, etc.
-  - Second, the `checkout` action persists its credentials by default. In this specific version, v5, it does that by writing the `GITHUB_TOKEN` directly to a `.git/config` file in the working directory.
-  - Third and finally, the `upload-artifact` action uploads _everything_ in the directory it's given, including hidden files and directories like `.git`.
-  - When combined, these mean that an innocent maintainer is now uploading a write-capable `GITHUB_TOKEN` to a publicly readable actions artifact. Anybody can find that artifact and exfiltrate the token from it.
-  - Palo Alto Networks described this vulnerability class in 2024, and termed it "artipacked."
+  - First, older repositories default to a read-write token for GitHub Actions by default. That means that, even if you don't set an explicit write permission, most jobs get a token that can modify the repository.
+  - Second, the `checkout` action persists its credentials by default. In this specific version, v5, it does that by writing the `GITHUB_TOKEN` directly to a file in the current working directory.
+  - Finally, the `upload-artifact` action uploads _everything_ in the directory it's given, including hidden files and directories.
+  - When combined, these mean that an innocent run actually uploads a write-capable `GITHUB_TOKEN` to a publicly readable actions artifact.
+  - Anybody can find that artifact and exfiltrate the token from it.
 ]
 
 == (insecure) platform defaults
@@ -473,18 +492,15 @@
 ]
 
 #speaker-note[
-  - I picked this as a first example because it's _also_ a case of GitHub improving its defaults, but in an uneven way.
-  - For one, _new_ repositories on GitHub no longer give the runner's `GITHUB_TOKEN` write access by default. But old repos still do, and established projects are older by definition!
-  - For another, v6 and newer of the `checkout` action made it so that the credential is persisted in a temporary directory instead. This makes it harder to embed your token into an artifact. But plenty of projects still use `RUNNER_TEMP` for scratch space because GitHub documents it as such.
-  - Finally, v4.4 and newer of `upload-artifact` skip hidden files and directories by default. But this doesn't protect users who bypass `upload-artifact` and use the artifact APIs directly, and it's also very disruptive to innocent workflows.
+  - I picked that as a first example because it's _also_ a case of GitHub improving its defaults, but in an uneven way.
+  - For one, _new_ repositories on GitHub no longer give the runner's `GITHUB_TOKEN` write access by default.
+  - But old repos still do, and established projects are older by definition!
+  - For another, newer versions of the `checkout` action made it so that the credential is persisted in a temporary directory instead.
+  - This makes it harder to embed your token into an artifact.
+  - But plenty of projects use that temporary directory for scratch space because GitHub documents it as such.
+  - Finally, newer versions of `upload-artifact` skip hidden files by default.
+  - But this doesn't protect users who bypass `upload-artifact` and use the artifact APIs directly, and it's also very disruptive to innocent workflows.
 ]
-
-// = #emoji.face.think
-//
-// #speaker-note[
-//   - So, if GitHub has already improved the defaults here, how could they take it to the next level?
-//   - In other words, how could they make this pattern _fully_ secure by default?
-// ]
 
 == (insecure) platform defaults
 
@@ -507,7 +523,8 @@
 #speaker-note[
   - So, let's take a look at some other cases where the defaults haven't shifted as much, or really at all.
   - Here's another workflow you might see on any given day of the week.
-  - It uses a hash-pin instead of a version pin, which ensures that we always get the exact same contents and not a mutable tag or branch reference.
+  - It uses a hash-pin instead of a version pin.
+  - This ensures that we always get the exact same contents and not a mutable tag or branch reference.
   - Many online resources, including both zizmor and GitHub's official documentation, will tell you to use hash-pins for improved security.
 ]
 
@@ -534,9 +551,12 @@
 
 #speaker-note[
   - This is what zizmor shows for that workflow.
-  - Unfortunately the workflow is completely owned: we thought we were pulling from a trusted source (`actions/checkout`), but actually we're pulling a commit from some random fork. Anybody in the world can make a public fork, so it's truly arbitrary code.
-  - This is a consequence of GitHub's fork network design: GitHub uses Git alternates to share a single Git object database across a repo and its forks. As a result, most of GitHub's APIs don't "see" the difference between a fork and its parents when referencing Git objects by SHA instead of name.
-  - I find this particularly terrifying because it's _so_ easy to miss: external contributors try to bump my actions all the time, and I'm one slip-up away from them having full code execution on a trusted trigger (like `push`).
+  - Unfortunately, the workflow is completely owned.
+  - We thought we were pulling from a trusted source, but actually we're pulling a commit from some random fork.
+  - Anybody in the world can make a public fork, so it's truly arbitrary code.
+  - This is a consequence of GitHub's fork network design: GitHub uses Git alternates to share a single Git object database across a repo and its forks.
+  - As a result, most of GitHub's APIs don't see the difference between a fork and its parents when referencing Git objects by hash instead of by name.
+  - I find this particularly terrifying because it's _so_ easy to miss: external contributors try to bump my actions all the time, and I'm one sleep-deprived review away from them giving them full code execution in a privileged job.
 ]
 
 == (insecure) platform defaults
@@ -546,8 +566,11 @@
 #move(dy: image-offset, rounded-image("assets/impostor-banner.png", width: 100%))
 
 #speaker-note(subslide: 1)[
-  - GitHub is aware of this; it's an intentional design and performance tradeoff in their Git hosting model.
-  - It's even something their web UI will warn you about, if you navigate to the commit directly. But that only shows up in the commit view, not anywhere in Actions itself. And there's no official API for checking impostor-ness, although there's an undocumented one if you look in the right place.
+  - GitHub is aware of this.
+  - It's an intentional design and performance tradeoff in their Git hosting model.
+  - It's even something their web UI will warn you about, if you navigate to the commit directly.
+  - But that only shows up in the commit view, not anywhere in Actions itself.
+  - And there's no official API for checking impostor-ness, although there's an undocumented one if you look in the right place.
   - So, what could GitHub do better here, in terms of secure defaults?
 ]
 
@@ -561,8 +584,10 @@
 
 #speaker-note(subslide: 2)[
   - Well, I think the answer is kind of self-evident: this just shouldn't work at all!
-  - GitHub should simply refuse to run workflows that contain impostor commits. That includes transitive uses through composite actions.
-  - The moving parts for this already exist within the platform: GitHub lets projects opt into requiring actions to be fully hash-pinned, and there's the undocumented API that I mentioned. They're just not tied together in a way that produces a secure default, yet.
+  - GitHub should simply refuse to run workflows that contain impostor commits.
+  - That includes transitive uses through composite actions.
+  - The moving parts for this already exist within the platform: GitHub lets projects opt into requiring actions to be fully hash-pinned, and there's the undocumented API that I mentioned.
+  - They're just not tied together in a way that produces a secure default, yet. But they could be.
 ]
 
 == footguns
@@ -583,7 +608,8 @@
 #speaker-note[
   - One last example before we move to the next domain.
   - Once again, we have a workflow we've all seen some version of.
-  - In this case, we're trying to limit a step so that it only runs on a `push` event, even if its parent workflow supports other triggers. This is important if, say, another trigger for the workflow is extremely security sensitive, such as a `pull_request_target` or `workflow_run`.
+  - In this case, we're trying to limit a step so that it only runs on a `push` event, even if its parent workflow supports other triggers.
+  - This is important if, say, another trigger for the workflow is extremely security sensitive, such as a `pull_request_target` or `workflow_run` trigger.
 ]
 
 == footguns
@@ -605,8 +631,10 @@
 #speaker-note[
   - As you've doubtless surmised, this workflow is vulnerable. This is what zizmor would show you for it.
   - The footgun here is that GitHub Actions expressions and YAML do not compose together cleanly.
-  - In this case, we have a YAML multi-line string. GitHub then evaluates the expression to `false` but then embeds it within the string, resulting in the token `false` followed by a newline. And that's a string instead of a boolean, so it evaluates to `true` instead of `false`.
-  - The end result is that we thought we were adding a defensive guard, but in reality GitHub Actions will happily run our step for an attacker.
+  - In this case, we have a YAML multi-line string.
+  - GitHub then evaluates the expression to `false` but then embeds it within the string, resulting in the token `false` followed by a newline.
+  - And that's a string instead of a boolean, so it evaluates to `true` instead of `false`.
+  - The end result is that we thought we were adding a defensive guard, but in reality our condition is always true and the attacker always gets to run it.
 ]
 
 == footguns
@@ -629,9 +657,11 @@
 )
 
 #speaker-note[
-  - That's a funny example because of how obviously wrong it is, but there are actually quite a few of these footguns in the Actions expression language.
-  - For example, this ternary-style condition won't do what you expect. Most people would expect it to evaluate to the empty string, but it actually evaluates to `'bar'`.
-  - GitHub added the `case()` function to work around this in January, but users need to manually identify currently buggy patterns and upgrade them manually.
+  - That's a funny example because of how obviously wrong it is.
+  - But there are actually quite a few of these footguns in the Actions expression language.
+  - For example, this ternary-style condition won't do what you expect.
+  - Most people would expect it to evaluate to the empty string, but it actually evaluates to `'bar'`.
+  - GitHub added the `case()` function to work around this in January, but users need to manually identify currently buggy patterns and upgrade them. It's not automatic.
 ]
 
 == footguns
@@ -657,10 +687,11 @@
 
 #speaker-note[
   - A third example: GitHub provides the `contains()` function for checking whether or an array or string contains some element.
-  - But there's no native way to express an array in an actions expression: you need to create an array via `fromJSON`, which people forget to do.
-  - They end up writing things like this instead, which _look_ right but are actually buggy. For example, a branch named `mai` would pass this check, since `mai` is a substring of the haystack. That's clearly not what the developer intended!
-  - So, the common theme in these expression footguns is that there's a discontinuity between the user's intuitions around how the expression DSL _should_ behave and how it _actually_ behaves.
-  - Also, just for the record, zizmor will detect all of these, and more.
+  - But there's no native way to express an array in an actions expression: you need to do something clunky like call `fromJSON` on a literal string. And users regularly forget to do that.
+  - They end up writing things like this instead, which _look_ right but are actually buggy.
+  - For example, a branch named `mai` would pass this check, since `mai` is a substring of the haystack. That's clearly not what the developer intended!
+  - The common theme in these expression footguns is that there's a discontinuity between the user's intuitions and the system's actual behavior.
+  - Also, just for the record: zizmor will detect all of these condition footguns, and more.
 ]
 
 = community practices
@@ -1137,7 +1168,8 @@
 ]
 
 #speaker-note[
-  - And with that, I'm done. I hope you enjoyed the session, and please come find me afterwards!
+  - And with that, I'm done. I hope you enjoyed the session and found it thought provoking.
+  - I'm happy to talk more, please come find me afterwards!
 ]
 
 #slide(
