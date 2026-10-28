@@ -273,10 +273,12 @@
 ]
 
 #speaker-note[
-  - First: GitHub Actions is an _amazing_ resource. It's functionallity free and unlimited compute for the world's open source. If I had to pay for what GitHub Actions gives me for free, it eaily would cost me a few thousand dollars a year.
-  - Stategically, GitHub Actions is also a great example of aligned interests.
+  - First: GitHub Actions is an _amazing_ resource.
+  - It's functionallity free and unlimited compute for the world's open source.
+  - If I had to pay for what GitHub Actions gives me for free, it eaily would cost me a few thousand dollars a year.
+  - [...] Stategically, GitHub Actions is also a great example of aligned interests.
   - Big companies like Microsoft benefit from reliable and well-tested open source software, while OSS maintainers benefit from access to build and test environments they otherwise wouldn't have the time or resources to manage. Both parties win.
-  - Separately, GitHub Actions is a great practical example of "shifting left".
+  - [...] Finally, GitHub Actions is a great practical example of "shifting left".
   - Isolated CI/CD runners mean that OSS maintainers can do fewer sensitive things on local machines, and more things on ephemeral, isolated runners with carefully controlled and limited access.
 ]
 
@@ -415,7 +417,7 @@
     - insecure community practices
       - or: "my entire CI/CD depends on mystery meat from `curl | bash`"
     - reliability and availability
-      - or "if i see one more outage/slop pr i'm going back to self hosting"
+      - or: "if i see one more outage/slop pr i'm going back to self hosting"
   ]
 ]
 
