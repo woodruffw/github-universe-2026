@@ -1136,6 +1136,10 @@
   ))
 ]
 
+#speaker-note[
+  - And with that, I'm done. I hope you enjoyed the session, and please come find me afterwards!
+]
+
 #slide(
   config: utils.merge-dicts(
     config-page(
